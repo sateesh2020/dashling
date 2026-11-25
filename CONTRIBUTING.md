@@ -38,6 +38,14 @@ a widget or a theme without connecting a computer or running Docker. Edits to `w
 `scripts/demo/data.mjs`; if you add a widget that reads a new endpoint, add a fixture there and a line in `test/demo.test.mjs`.
 That test also fails if anything that looks like real personal data (usernames, hostnames, home-network addresses, tokens) appears in the demo.
 
+## The website
+
+`site/` is the landing page for <https://sateesh2020.github.io/dashling/>; it embeds the **real panel** running on the fictional demo data, with
+no server: `demo-shim.mjs` answers the panel's `/api/` calls in the browser using the same `scripts/demo/router.mjs` as `npm run demo`.
+`npm run site` builds it into `_site/` (then serve that folder with any static server, for example `python3 -m http.server -d _site`).
+`test/site.test.mjs` builds it and checks every link, the sub-folder paths, and that nothing private is published. The `Website` workflow
+deploys it to GitHub Pages on pushes to `main` that touch `site/`, `web/`, the demo or the images.
+
 ## Screenshots and GIFs
 
 The README images are taken from the demo, never from a real machine. To refresh them:

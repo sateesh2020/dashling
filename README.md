@@ -1,6 +1,6 @@
 # Dashling
 
-[![CI](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml/badge.svg)](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![CI](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml/badge.svg)](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml) [![Website](https://img.shields.io/badge/website-live%20demo-7c5cff)](https://sateesh2020.github.io/dashling/) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 <p align="center">
   <img src="docs/img/tour.gif" alt="A tour of the Dashling panel: home, system graphs, computer controls with OBS and Docker, world clocks, a photo frame, news, GitHub activity and AI usage, in several themes" width="880">
@@ -199,7 +199,7 @@ Dashling is its own code, but it borrows ideas and visual direction from these p
 - [ersinkoc/phonebox](https://github.com/ersinkoc/phonebox): the original idea of turning a spare phone or tablet into a desk panel.
 - [zacharyinserra/deskhub](https://github.com/zacharyinserra/deskhub): the widget layout, the GitHub streak and contribution view, the CPU, memory and network graphs, 3D printer status, shortcuts, and the flat **Graphite** look.
 - [dustyPad](https://dustypad.com): the **Dot Matrix**, **Cyberdeck** and **Terminal** themes.
-- Fonts are bundled from [Fontsource](https://fontsource.org): Inter, JetBrains Mono, Doto and VT323, all under the SIL Open Font License.
+- Fonts are bundled from [Fontsource](https://fontsource.org): Inter, JetBrains Mono, Doto and VT323, all under the SIL Open Font License (see [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md)).
 
 ## Contributing
 

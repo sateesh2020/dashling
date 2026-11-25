@@ -13,7 +13,8 @@
     "test:gates": "bash test/gates/refusals.sh && bash test/gates/linux.sh",
     "lint": "node scripts/check-syntax.mjs && bash scripts/lint-shell.sh",
     "check": "npm run lint && npm test",
-    "demo": "node scripts/demo/server.mjs"
+    "demo": "node scripts/demo/server.mjs",
+    "site": "node scripts/build-site.mjs"
   },
   "devDependencies": {
     "ws": "^8.18.0"

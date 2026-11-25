@@ -82,8 +82,14 @@ gates) must change too. Big numbers are printed as plain integers.
 instead of talking to a computer. It exists to let people try the panel in seconds and to take the README screenshots
 (`stage.html` frames the panel as a phone, tablet or theme grid). It listens on localhost unless you set `DEMO_HOST`.
 
+## The website
+
+`site/` (landing page) and `scripts/build-site.mjs` produce a static site for GitHub Pages. It includes a copy of `web/` at `/demo/` with its
+absolute paths rewritten and `demo-shim.mjs` injected, so the genuine panel runs in the visitor's browser against `scripts/demo/router.mjs`
+(the same fictional data as `npm run demo`). There is no server and no data leaves the page.
+
 ## Tests, in one line each
 
 `layout` (catalogue and layouts) · `extras` (parsers, SSRF) · `obs` (fake OBS) · `host-parse` (the output contract) ·
-`server-smoke` (real server) · `demo` (the demo server and its fictional data) · `gates/refusals.sh` (hostile input) · `gates/linux.sh` (fake `/sys`). Details in
+`server-smoke` (real server) · `demo` (the demo server and its fictional data) · `site` (the built website) · `gates/refusals.sh` (hostile input) · `gates/linux.sh` (fake `/sys`). Details in
 [CONTRIBUTING.md](../CONTRIBUTING.md).

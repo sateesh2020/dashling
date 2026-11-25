@@ -9,3 +9,5 @@ test
 docs
 package.json
 package-lock.json
+_site
+site
