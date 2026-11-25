@@ -7,7 +7,7 @@
   "type": "module",
   "engines": { "node": ">=22" },
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test \"test/*.test.mjs\"",
     "test:gates": "bash test/gates/refusals.sh && bash test/gates/linux.sh",
     "lint": "node scripts/check-syntax.mjs && bash scripts/lint-shell.sh",
     "check": "npm run lint && npm test"
