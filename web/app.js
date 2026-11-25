@@ -428,10 +428,16 @@ function setArt(url) {
 const WMO = c => c === 0 ? ['☀️', 'Clear'] : c <= 2 ? ['⛅', 'Partly cloudy'] : c === 3 ? ['☁️', 'Overcast'] : c <= 48 ? ['🌫️', 'Fog']
   : c <= 57 ? ['🌦️', 'Drizzle'] : c <= 67 ? ['🌧️', 'Rain'] : c <= 77 ? ['❄️', 'Snow'] : c <= 82 ? ['🌧️', 'Showers'] : c <= 86 ? ['🌨️', 'Snow showers'] : ['⛈️', 'Thunderstorm'];
 const X = mountExtras({ api, $, el, pageHas, getIdx: () => idx, WMO, token: () => token });
+let wxRetry = null;
 async function loadWeather() {
   const body = $('wx-body');
   try {
     const w = await api('/api/weather');
+    if (w.error) {                       // the weather service timed out or failed: say so, never claim "No city set"
+      if (!body.children.length) body.append(el('span', 'wx-meta', 'Weather unavailable right now. Retrying…'));   // keep the last good reading if there is one
+      clearTimeout(wxRetry); wxRetry = setTimeout(loadWeather, 60_000);
+      return;
+    }
     $('wx-units').textContent = w.units === 'f' ? '°F' : '°C';
     body.replaceChildren(); X.onWeather(w);
     if (!w.location) { body.append(el('span', 'wx-meta', 'No city set. Tap "City" to choose one.')); return; }
