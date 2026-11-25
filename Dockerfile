@@ -1,4 +1,4 @@
-FROM node:22-alpine
+FROM node:26-alpine
 RUN apk add --no-cache openssh-client-default && rm -rf /var/cache/apk/*
 WORKDIR /app
 COPY server ./server
