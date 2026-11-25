@@ -92,6 +92,31 @@ jobs:
           $r | Format-Table -AutoSize
           if ($r) { exit 1 }
 
+  android:
+    name: Android app builds
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - name: Android SDK pieces (platform 34, build-tools 34.0.0)
+        run: |
+          sdk="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          if [ ! -x "$sdk/build-tools/34.0.0/aapt2" ] || [ ! -f "$sdk/platforms/android-34/android.jar" ]; then
+            yes | "$sdk/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+            "$sdk/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0"
+          fi
+          echo "ANDROID_HOME=$sdk" >> "$GITHUB_ENV"
+      - name: Build and sign with a throwaway key (this APK is only a build check)
+        run: bash android/build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dashling-android-ci-build
+          path: android/dist/dashling.apk
+          retention-days: 7
+
   docker:
     name: Docker image builds and answers
     runs-on: ubuntu-latest

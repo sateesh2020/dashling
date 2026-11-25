@@ -123,6 +123,28 @@ exactly the commands in it and nothing else. Treat every edit to a gate like a s
 - If you couldn't test on an OS you touched, say so plainly. That's fine; hiding it isn't.
 - By contributing you agree your work is released under the [MIT License](LICENSE).
 
+## Releasing (maintainers)
+
+A release is a tag: `git tag -a v0.2.0 -m "Dashling v0.2.0" && git push origin v0.2.0`. The **Release** workflow then
+runs the tests, publishes the multi-arch Docker image (`ghcr.io/sateesh2020/dashling`: `0.2.0`, `0.2` and, for a stable
+release, `latest`), creates the GitHub Release if it doesn't exist, and builds, signs and attaches the **Android APK**
+(`dashling-0.2.0.apk` plus `SHA256SUMS.txt`). Tags with a dash (`v0.2.0-rc1`) are pre-releases and never get `latest`.
+
+**One-time setup for the APK.** Android only installs an update over an existing app if it is signed with the same key, so
+releases use one fixed key. `android/build.sh` creates it in `~/.dashling-android/` the first time you build. Give it to
+GitHub as two repository secrets (Settings > Secrets and variables > Actions), and keep a backup of that folder somewhere safe:
+
+```bash
+base64 -i ~/.dashling-android/release.keystore | gh secret set ANDROID_KEYSTORE_B64
+gh secret set ANDROID_KEYSTORE_PASSWORD < ~/.dashling-android/ks.pass
+```
+
+Without the secrets the release still succeeds, but skips the APK and prints a warning. If you ever lose the key, the next APK
+can't update existing installs (people must uninstall first), so never commit it and never regenerate it casually.
+`versionCode` is derived from the tag (`v0.1.1` becomes 10199), so it always increases.
+
+After a release, the **Smoke test (published image)** workflow runs by itself and pulls the new image.
+
 ## Security issues
 
 Please **don't** open a public issue for a vulnerability. See [SECURITY.md](SECURITY.md).

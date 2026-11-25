@@ -67,3 +67,58 @@ jobs:
             [[ "$TAG" == *-* ]] && flags+=(--prerelease)      # v0.1.0-rc1, v1.0.0-beta.2 ... are pre-releases and never become "latest"
             gh release create "$TAG" --generate-notes --title "$TAG" "${flags[@]}"
           fi
+
+  android:
+    name: Build and attach the Android APK
+    needs: publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Is the release signing key configured?
+        id: key
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+        run: |
+          if [ -z "$KS_B64" ]; then
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::ANDROID_KEYSTORE_B64 is not set, so no APK was attached to this release. See CONTRIBUTING.md > Releasing."
+          else
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.key.outputs.configured == 'true'
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - if: steps.key.outputs.configured == 'true'
+        name: Android SDK pieces (platform 34, build-tools 34.0.0)
+        run: |
+          sdk="${ANDROID_HOME:-$ANDROID_SDK_ROOT}"
+          if [ ! -x "$sdk/build-tools/34.0.0/aapt2" ] || [ ! -f "$sdk/platforms/android-34/android.jar" ]; then
+            yes | "$sdk/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null || true
+            "$sdk/cmdline-tools/latest/bin/sdkmanager" "platforms;android-34" "build-tools;34.0.0"
+          fi
+          echo "ANDROID_HOME=$sdk" >> "$GITHUB_ENV"
+      - name: Build, sign with the release key, and attach to the release
+        if: steps.key.outputs.configured == 'true'
+        env:
+          KS_B64: ${{ secrets.ANDROID_KEYSTORE_B64 }}
+          KS_PASS: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.dashling-android && chmod 700 ~/.dashling-android
+          printf '%s' "$KS_B64" | base64 -d > ~/.dashling-android/release.keystore
+          ( umask 077; printf '%s' "$KS_PASS" > ~/.dashling-android/ks.pass )
+          # versionCode must only ever go up so updates install over old versions:
+          #   v0.1.1 -> 10199, v0.1.1-rc1 -> 10101 (a pre-release sorts below its final release)
+          ver="${TAG#v}"; core="${ver%%-*}"; pre="${ver#"$core"}"
+          IFS=. read -r maj min pat <<< "$core"
+          if [ -z "$pre" ]; then rel=99; else n=$(printf '%s' "$pre" | grep -oE '[0-9]+$' || echo 0); rel=$(( n > 98 ? 98 : n )); fi
+          export VERSION_NAME="$ver" VERSION_CODE=$(( maj * 1000000 + min * 10000 + pat * 100 + rel ))
+          bash android/build.sh
+          apk="dashling-$ver.apk"; cp android/dist/dashling.apk "$apk"
+          "$ANDROID_HOME/build-tools/34.0.0/apksigner" verify --print-certs "$apk" | grep -E 'SHA-256 digest'
+          sha256sum "$apk" > SHA256SUMS.txt; cat SHA256SUMS.txt
+          gh release upload "$TAG" "$apk" SHA256SUMS.txt --clobber

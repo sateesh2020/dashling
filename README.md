@@ -1,9 +1,11 @@
-# Dashling for iPhone & iPad
+# Dashling
 
 [![CI](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml/badge.svg)](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-A desk-panel web app for your iPhone or iPad, served from a locked-down Docker container.
-Open it in Safari, tap **Share > Add to Home Screen**, and it runs full-screen like an app.
+A desk-panel web app for your **phone or tablet** (iPhone, iPad and Android). It shows live stats and controls for the computer on your desk (macOS, Linux or Windows), plus weather, news, clocks, a photo frame and more, served from a locked-down Docker container that you run yourself.
+
+- **iPhone / iPad:** open it in Safari, tap **Share > Add to Home Screen**, and it runs full-screen like an app.
+- **Android:** install the **Dashling app** (an APK from the [Releases page](https://github.com/sateesh2020/dashling/releases/latest)): full screen, kiosk style, keeps the screen on while charging. Or just open it in Chrome. See [Android](#android-app-recommended) below.
 Inspired by [ersinkoc/phonebox](https://github.com/ersinkoc/phonebox) (Android); this is an independent rewrite with its own code and name.
 
 ## Supported computers
@@ -50,16 +52,21 @@ docker compose logs -f dashling           # shows pairing codes (and the access 
 Both options use the same container name and data volume, so you can switch between them without losing your paired devices or settings.
 Building from source is for contributors and for anyone who wants to read and audit exactly what runs. The published image is built by CI from a tagged commit (see `.github/workflows/release.yml`).
 
-Open `http://<your-computer-ip>:8787` on the iPhone/iPad, it asks for a 6-digit pairing code. The code is printed in `docker compose logs -f dashling` when the login screen opens (valid 5 minutes, burned after 5 wrong guesses). Once paired, the device keeps its own key and never asks again. Then Add to Home Screen.
+Open `http://<your-computer-ip>:8787` on your phone or tablet (or enter that address in the Android app), it asks for a 6-digit pairing code. The code is printed in `docker compose logs -f dashling` when the login screen opens (valid 5 minutes, burned after 5 wrong guesses). Once paired, the device keeps its own key and never asks again. Then Add to Home Screen.
 Revoke every paired device with `docker compose exec dashling rm /data/devices.json` (the old access token still works as a fallback: tap "Use access token instead").
 Devices are not identified by MAC address: a web page can't see it, Android/iOS randomize it per network, and it's trivial to spoof. A per-device key is the safe equivalent.
 The host port defaults to 8787; change it with `DASHLING_PORT=9000 docker compose up -d`.
 
 ### Android app (recommended)
 
-`android/` has a small kiosk app: landscape only, screen always on, full screen with no address bar, and no HTTPS needed. Build it with `./android/build.sh` (needs the Android command-line tools, ~140 MB download; see `android/README.md`), install with `adb install -r android/dist/dashling.apk`, enter `<your-computer-ip>:8787`, and pair with the 6-digit code. Hold the top-left corner for 1.5 s (or tap with three fingers) to change the address.
+`android/` has a small kiosk app: landscape only, full screen with no address bar, no HTTPS needed, the screen stays on while charging and sleeps normally on battery, and it wakes by itself when you plug the charger in.
 
-The layout adapts to every screen: portrait and landscape phones (the page dock becomes a left rail on short screens), iPad, and desktop browsers.
+**Get it:** download `dashling-<version>.apk` from the [latest release](https://github.com/sateesh2020/dashling/releases/latest) and open it on the phone (Android will ask you to allow installs from your browser or file manager). Check the download against `SHA256SUMS.txt` on the release page. The APK is signed with the project's key; its certificate SHA-256 is
+`21:F4:BD:B1:E7:4E:C3:5C:1D:A7:E7:AE:3A:4E:48:F3:3D:51:68:02:8F:B7:1C:25:92:CF:C6:6B:6A:5E:B8:26` (check with `apksigner verify --print-certs dashling-<version>.apk`). Future releases are signed with the same key, so they update in place.
+
+**Or build it yourself** with `./android/build.sh` (needs the Android command-line tools, ~140 MB download; see `android/README.md`), install with `adb install -r android/dist/dashling.apk`, enter `<your-computer-ip>:8787`, and pair with the 6-digit code. Hold the top-left corner for 1.5 s (or tap with three fingers) to change the address.
+
+The layout adapts to every screen: portrait and landscape phones (the page dock becomes a left rail on short screens), tablets, and desktop browsers.
 
 ### Android (Chrome, without the app)
 

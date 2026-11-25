@@ -1,4 +1,4 @@
-// Dashling for iOS/iPadOS: zero-dependency server (Node built-ins only).
+// Dashling: zero-dependency server (Node built-ins only). Serves the panel to phones, tablets and browsers.
 import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';

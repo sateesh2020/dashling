@@ -1,6 +1,6 @@
 # Dashling for Android
 
-A thin kiosk wrapper around the Dashling panel. It opens your panel full screen in a WebView:
+A thin kiosk wrapper around the Dashling panel. **Download the APK from the [latest release](https://github.com/sateesh2020/dashling/releases/latest)**, or build it yourself (below). It opens your panel full screen in a WebView:
 
 - **Landscape only** (both landscape directions), fullscreen, no address bar.
 - **Screen stays on while charging** (USB, wall or wireless) and **turns off by the normal screen timeout on battery**, so an unplugged phone saves power (`FLAG_KEEP_SCREEN_ON` is set only while plugged in; no browser secure-origin rules involved). Set the timeout you want in Android's display settings. A small background service wakes the screen when power is connected, so an unplugged phone with a broken power button can be woken just by plugging in the cable, and the panel shows over a swipe lock screen.
@@ -36,6 +36,8 @@ adb install -r android/dist/dashling.apk        # USB debugging on
 ```
 
 or copy `dashling.apk` to the phone and open it (allow "install unknown apps" for your file manager or browser once).
+
+**Release APK or your own build?** The APK on the GitHub release is signed with the project's key. An APK you build yourself is signed with *your* key, so the two can't be installed over each other: Android refuses the update, and you'd have to uninstall first (which clears the saved panel address and pairing). Pick one source and stay with it.
 
 ## Set or change the address
 
