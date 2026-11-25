@@ -1,6 +1,7 @@
 name: Release
 
 # Push a tag like v0.2.0 to publish a multi-arch Docker image to GitHub Container Registry and create a GitHub Release.
+# Tags with a dash (v0.2.0-rc1) are pre-releases: they get their own image tag but NOT the "latest" tag.
 on:
   push:
     tags: ['v*']
@@ -43,7 +44,7 @@ jobs:
           tags: |
             type=semver,pattern={{version}}
             type=semver,pattern={{major}}.{{minor}}
-            type=raw,value=latest
+            type=raw,value=latest,enable=${{ !contains(github.ref_name, '-') }}
       - uses: docker/build-push-action@v7
         with:
           context: .
@@ -57,4 +58,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAG: ${{ github.ref_name }}
-        run: gh release create "$TAG" --generate-notes --title "$TAG"
+        run: |
+          # Safe to re-run, and safe if you already created the release by hand in the GitHub UI.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists: leaving it as is (the image was still published)."
+          else
+            flags=()
+            [[ "$TAG" == *-* ]] && flags+=(--prerelease)      # v0.1.0-rc1, v1.0.0-beta.2 ... are pre-releases and never become "latest"
+            gh release create "$TAG" --generate-notes --title "$TAG" "${flags[@]}"
+          fi
