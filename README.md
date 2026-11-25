@@ -8,7 +8,7 @@ Inspired by [ersinkoc/phonebox](https://github.com/ersinkoc/phonebox) (Android);
 
 ```sh
 docker compose build
-./host/setup-mac.sh                       # one-time, asks before changing anything
+./host/dashling.sh setup               # one-time, asks before changing anything (see host/README.md; `update` after a git pull)
 HOST_SSH=$(whoami)@host.docker.internal docker compose up -d
 docker compose logs -f dashling           # shows pairing codes (and the access token on first run)
 ```
