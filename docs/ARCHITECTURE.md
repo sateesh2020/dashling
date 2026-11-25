@@ -76,8 +76,14 @@ gates) must change too. Big numbers are printed as plain integers.
 | Container → host filesystem | nothing | read-only root, non-root user, capabilities dropped; only the `/data` volume is writable |
 | Background jobs → gate | cache files | the gate only reads them |
 
+## The demo
+
+`scripts/demo/` is a second, tiny server (`npm run demo`) that serves the same `web/` folder with invented data from `data.mjs`
+instead of talking to a computer. It exists to let people try the panel in seconds and to take the README screenshots
+(`stage.html` frames the panel as a phone, tablet or theme grid). It listens on localhost unless you set `DEMO_HOST`.
+
 ## Tests, in one line each
 
 `layout` (catalogue and layouts) · `extras` (parsers, SSRF) · `obs` (fake OBS) · `host-parse` (the output contract) ·
-`server-smoke` (real server) · `gates/refusals.sh` (hostile input) · `gates/linux.sh` (fake `/sys`). Details in
+`server-smoke` (real server) · `demo` (the demo server and its fictional data) · `gates/refusals.sh` (hostile input) · `gates/linux.sh` (fake `/sys`). Details in
 [CONTRIBUTING.md](../CONTRIBUTING.md).

@@ -2,11 +2,58 @@
 
 [![CI](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml/badge.svg)](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+<p align="center">
+  <img src="docs/img/tour.gif" alt="A tour of the Dashling panel: home, system graphs, computer controls with OBS and Docker, world clocks, a photo frame, news, GitHub activity and AI usage, in several themes" width="880">
+</p>
+<p align="center"><sub>Every screenshot in this README is the built-in demo, which uses fictional data.</sub></p>
+
 A desk-panel web app for your **phone or tablet** (iPhone, iPad and Android). It shows live stats and controls for the computer on your desk (macOS, Linux or Windows), plus weather, news, clocks, a photo frame and more, served from a locked-down Docker container that you run yourself.
 
 - **iPhone / iPad:** open it in Safari, tap **Share > Add to Home Screen**, and it runs full-screen like an app.
 - **Android:** install the **Dashling app** (an APK from the [Releases page](https://github.com/sateesh2020/dashling/releases/latest)): full screen, kiosk style, keeps the screen on while charging. Or just open it in Chrome. See [Android](#android-app-recommended) below.
 Inspired by [ersinkoc/phonebox](https://github.com/ersinkoc/phonebox) (Android); this is an independent rewrite with its own code and name.
+
+## See it first
+
+**Try it in 10 seconds, with no computer to connect and no Docker.** You need [Node.js](https://nodejs.org) 22 or newer:
+
+```sh
+git clone https://github.com/sateesh2020/dashling.git && cd dashling
+npm run demo        # then open http://localhost:8799 and enter the pairing code 123456
+```
+
+It serves the real panel with invented data (a pretend MacBook, a pretend city, fictional music, news and projects). It listens on `localhost` only; to try it on a phone on the same Wi-Fi, run `DEMO_HOST=0.0.0.0 npm run demo` and open `http://<your-computer-ip>:8799`. Or just resize the browser window.
+
+### On your phone
+
+<p align="center"><img src="docs/img/phones.jpg" alt="Three phone screens: Home with the clock, weather, now playing and rings; System with live CPU, memory and network graphs; Computer with brightness, OBS controls, calendar and Docker" width="760"></p>
+
+### On a tablet or a second screen
+
+<table>
+  <tr>
+    <td width="50%"><a href="docs/img/system.jpg"><img src="docs/img/system.jpg" alt="System page in the Cyberdeck theme: CPU, memory and network graphs, disk, battery"></a><br><sub><b>System.</b> Live CPU, memory and network graphs, temperatures, fans, power draw and the top processes (you can quit your own).</sub></td>
+    <td width="50%"><a href="docs/img/computer.jpg"><img src="docs/img/computer.jpg" alt="Computer page in the Graphite theme: brightness, lock, OBS recording, calendar and Docker containers"></a><br><sub><b>Computer.</b> Brightness, lock, OBS recording and scenes, your calendar, and Docker start, stop and restart.</sub></td>
+  </tr>
+  <tr>
+    <td><a href="docs/img/time.jpg"><img src="docs/img/time.jpg" alt="Time page: world clocks, analog clock, stopwatch, countdown and time progress"></a><br><sub><b>Time.</b> World clocks, an analog clock, stopwatch, countdown, day, week and year progress, hourly forecast, sun and moon, air quality.</sub></td>
+    <td><a href="docs/img/personal.jpg"><img src="docs/img/personal.jpg" alt="Personal page: a photo frame, daily checklist, counters and a quote"></a><br><sub><b>Personal.</b> A photo frame from a folder on your computer, a daily checklist that resets at midnight, counters and a quote.</sub></td>
+  </tr>
+  <tr>
+    <td><a href="docs/img/news.jpg"><img src="docs/img/news.jpg" alt="News page in the Terminal theme: Hacker News and RSS feeds"></a><br><sub><b>News.</b> Hacker News and your own RSS feeds, plus exchange rates. Feeds can only be public <code>https</code> addresses.</sub></td>
+    <td><a href="docs/img/ai.jpg"><img src="docs/img/ai.jpg" alt="AI page in the Cyberdeck theme: usage limits, daily token graph by model and recent sessions"></a><br><sub><b>AI.</b> Plan limits, daily usage by model and your latest coding-assistant sessions, read from local logs (token counts only).</sub></td>
+  </tr>
+  <tr>
+    <td><a href="docs/img/code.jpg"><img src="docs/img/code.jpg" alt="Code page: a GitHub contribution heatmap, streaks and pull requests waiting for review"></a><br><sub><b>Code.</b> Your contribution heatmap, streaks, and the pull requests waiting for your review.</sub></td>
+    <td><a href="docs/img/media.jpg"><img src="docs/img/media.jpg" alt="Media page in the Cyberdeck theme: album art, track, seek bar, transport controls and volume"></a><br><sub><b>Media.</b> What is playing on your computer, with seek, skip and volume.</sub></td>
+  </tr>
+</table>
+
+### Six themes
+
+<p align="center"><img src="docs/img/themes.jpg" alt="The same System page in six themes: Liquid Glass, Liquid Light, Graphite, Dot Matrix, Cyberdeck and Terminal" width="880"></p>
+
+Liquid Glass, Liquid Light, Graphite, Dot Matrix, Cyberdeck and Terminal. Tap the palette button to switch; the choice is remembered per device. There are more pages not shown here (stocks, a 3D printer, shortcuts, notes, notifications, Home Assistant).
 
 ## Supported computers
 

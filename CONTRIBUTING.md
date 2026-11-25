@@ -31,6 +31,25 @@ To work against a real machine, follow [host/README.md](host/README.md) and set 
 code, build from source: add `COMPOSE_FILE=docker-compose.yml:docker-compose.build.yml` to your (git-ignored) `.env`, then
 `docker compose up -d --build` (or pass `-f docker-compose.yml -f docker-compose.build.yml` each time).
 
+## Try your change with the demo
+
+`npm run demo` serves the real panel on <http://localhost:8799> with **fictional data** (pairing code `123456`), so you can work on
+a widget or a theme without connecting a computer or running Docker. Edits to `web/` show up on reload. The fake data lives in
+`scripts/demo/data.mjs`; if you add a widget that reads a new endpoint, add a fixture there and a line in `test/demo.test.mjs`.
+That test also fails if anything that looks like real personal data (usernames, hostnames, home-network addresses, tokens) appears in the demo.
+
+## Screenshots and GIFs
+
+The README images are taken from the demo, never from a real machine. To refresh them:
+
+1. `npm run demo`, then open `/_stage` (the options are in the comment at the top of `scripts/demo/stage.html`), for example
+   `http://localhost:8799/_stage?w=1280&h=800&p=system&theme=cyber&frame=tablet` for a tablet shot,
+   `?trio=home,system,mac&theme=glass` for three phones, or `?themes=glass,light,graphite,dots,cyber,terminal&p=system` for the theme grid.
+2. Capture just the device area (move the mouse pointer out of the shot) and save it as `<page>-<theme>.png`.
+3. `scripts/demo/make-media.sh <folder>` turns the captures into `docs/img/*.jpg` and the tour GIF (needs `ffmpeg`).
+
+Keep each image under about 250 KB and the GIF under about 2 MB.
+
 ## Run the checks
 
 ```bash

@@ -1,0 +1,42 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Dashling demo stage</title>
+<!-- Screenshot helper for the README (run `npm run demo`, then open one of these):
+       /_stage?w=1280&h=800&p=home&theme=glass&frame=tablet          one panel
+       /_stage?trio=home,system,news&theme=glass                     three phones side by side
+       /_stage?themes=glass,light,graphite,dots,cyber,terminal&p=home   every theme in a grid
+     w,h = CSS size of the panel; p = page id (home, system, mac, time, personal, news, code, ai, stocks, media);
+     theme = glass|light|graphite|dots|cyber|terminal; frame = phone|tablet|none; scale = zoom; bg = page colour. -->
+<style>
+  html, body { margin: 0; background: var(--bg, transparent); }
+  #wrap { display: inline-flex; flex-wrap: wrap; gap: 28px; margin: 28px; transform-origin: 0 0; align-items: flex-start; }
+  .dev { box-sizing: content-box; overflow: hidden; }
+  .dev.phone { border: 11px solid #0c0c10; border-radius: 44px; box-shadow: 0 0 0 2px #3a3a44, 0 24px 60px rgb(0 0 0 / .45); }
+  .dev.tablet { border: 15px solid #0c0c10; border-radius: 30px; box-shadow: 0 0 0 2px #3a3a44, 0 24px 60px rgb(0 0 0 / .45); }
+  .dev.card { border-radius: 16px; box-shadow: 0 10px 30px rgb(0 0 0 / .35); }
+  iframe { display: block; border: 0; }
+  .dev.phone iframe { border-radius: 33px; } .dev.tablet iframe { border-radius: 15px; }
+</style>
+<div id="wrap"></div>
+<script>
+  const q = new URLSearchParams(location.search), theme0 = q.get('theme') || 'glass', page0 = q.get('p') || 'home';
+  document.documentElement.style.setProperty('--bg', q.get('bg') || 'transparent');
+  const specs = q.get('trio') ? q.get('trio').split(',').map((p) => ({ p, theme: theme0, w: 390, h: 844, frame: 'phone' }))
+    : q.get('themes') ? q.get('themes').split(',').map((t) => ({ p: page0, theme: t, w: 600, h: 375, frame: 'card' }))
+    : [{ p: page0, theme: theme0, w: +q.get('w') || 390, h: +q.get('h') || 844, frame: q.get('frame') || 'none' }];
+  const wrap = document.getElementById('wrap'); wrap.style.transform = `scale(${+q.get('scale') || 1})`;
+  if (q.get('cols')) wrap.style.width = `${+q.get('cols') * (specs[0].w + 40)}px`;
+  (async () => {
+    const { layout } = await (await fetch('/api/layout', { headers: { Authorization: 'Bearer demo' } })).json();
+    localStorage.setItem('dl_token', 'demo-token');
+    for (const s of specs) {                    // one at a time: each panel reads its page and theme from localStorage when it loads
+      const idx = Math.max(0, layout.pages.findIndex((x) => x.id === s.p));
+      localStorage.setItem('dl_page', String(idx)); localStorage.setItem('dl_theme', s.theme);
+      const dev = document.createElement('div'), f = document.createElement('iframe');
+      dev.className = 'dev ' + s.frame; f.style.width = s.w + 'px'; f.style.height = s.h + 'px'; f.title = 'Dashling';
+      dev.append(f); wrap.append(dev);
+      await new Promise((ok) => { f.onload = ok; f.src = '/'; }); await new Promise((r) => setTimeout(r, 900));
+    }
+    document.title = 'ready';
+  })();
+</script>

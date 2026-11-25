@@ -5,12 +5,15 @@
   "description": "Self-hosted desk-panel dashboard for your phone: computer stats, controls, OBS, weather, news and more.",
   "license": "MIT",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "test": "node --test \"test/*.test.mjs\"",
     "test:gates": "bash test/gates/refusals.sh && bash test/gates/linux.sh",
     "lint": "node scripts/check-syntax.mjs && bash scripts/lint-shell.sh",
-    "check": "npm run lint && npm test"
+    "check": "npm run lint && npm test",
+    "demo": "node scripts/demo/server.mjs"
   },
   "devDependencies": {
     "ws": "^8.18.0"
