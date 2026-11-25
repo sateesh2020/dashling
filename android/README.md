@@ -3,7 +3,7 @@
 A thin kiosk wrapper around the Dashling panel. It opens your panel full screen in a WebView:
 
 - **Landscape only** (both landscape directions), fullscreen, no address bar.
-- **Screen always on** while the app is open (`FLAG_KEEP_SCREEN_ON`; no browser secure-origin rules involved).
+- **Screen stays on while charging** (USB, wall or wireless) and **turns off by the normal screen timeout on battery**, so an unplugged phone saves power (`FLAG_KEEP_SCREEN_ON` is set only while plugged in; no browser secure-origin rules involved). Set the timeout you want in Android's display settings. A small background service wakes the screen when power is connected, so an unplugged phone with a broken power button can be woken just by plugging in the cable, and the panel shows over a swipe lock screen.
 - Handles camera cut-outs (the panel's `env(safe-area-inset-*)` padding applies).
 - Back button does nothing (kiosk). Links to any host other than your panel are ignored.
 - If the panel can't be reached it shows "Can't reach the panel, retrying…" and retries every 5 s.

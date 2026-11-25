@@ -18,6 +18,11 @@ import android.view.ViewConfiguration;
 import android.view.WindowInsets;
 import android.view.WindowInsetsController;
 import android.view.WindowManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.BatteryManager;
 import android.webkit.RenderProcessGoneDetail;
 import android.webkit.SslErrorHandler;
 import android.webkit.WebResourceError;
@@ -37,7 +42,7 @@ import java.net.URISyntaxException;
 import java.util.Locale;
 
 /**
- * Kiosk wrapper for the Dashling panel: landscape only, screen always on, fullscreen, no address bar.
+ * Kiosk wrapper for the Dashling panel: landscape only, screen on while charging (sleeps normally on battery), fullscreen, no address bar.
  * The panel address is entered once on the device and kept in SharedPreferences. Nothing is hard-coded.
  *
  * Change the address: press and hold the top-left corner for 1.5 s, or tap the screen with three fingers.
@@ -66,10 +71,25 @@ public class MainActivity extends Activity {
         @Override public void run() { holdArmed = false; showAddressDialog(); }
     };
 
+    // Charging (USB, wall or wireless): keep the screen on. On battery: let the system's screen timeout turn it off.
+    private final BroadcastReceiver powerRx = new BroadcastReceiver() {
+        @Override public void onReceive(Context c, Intent i) { applyKeepAwake(i); }
+    };
+    private void applyKeepAwake(Intent battery) {
+        boolean plugged = battery != null && battery.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0) != 0;
+        if (plugged) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        // Keep-awake is applied only while charging (see powerRx), so on battery the screen times out and saves power.
+        // PowerWakeService wakes the screen again when power is connected (many phones don't, and a broken power button can't).
+        try {
+            Intent svc = new Intent(this, PowerWakeService.class);
+            if (Build.VERSION.SDK_INT >= 26) startForegroundService(svc); else startService(svc);
+        } catch (RuntimeException ignored) { }
         if (Build.VERSION.SDK_INT >= 28) {
             WindowManager.LayoutParams lp = getWindow().getAttributes();
             lp.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
@@ -308,11 +328,15 @@ public class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        applyKeepAwake(registerReceiver(powerRx, new IntentFilter(Intent.ACTION_BATTERY_CHANGED)));   // sticky: gives the current state at once
         web.onResume();
         hideSystemUi();
         if (baseUrl != null && errorView.getVisibility() == View.VISIBLE) ui.post(retry);
     }
-    @Override protected void onPause() { web.onPause(); super.onPause(); }
+    @Override protected void onPause() {
+        try { unregisterReceiver(powerRx); } catch (IllegalArgumentException ignored) { }
+        web.onPause(); super.onPause();
+    }
 
     @Override protected void onDestroy() {
         ui.removeCallbacksAndMessages(null);
