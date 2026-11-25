@@ -17,7 +17,7 @@ jobs:
     name: JavaScript (syntax + tests)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -30,7 +30,7 @@ jobs:
     name: Shell (ShellCheck)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: ShellCheck + syntax
         run: |
           sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
@@ -40,7 +40,7 @@ jobs:
     name: Gate tests (Linux)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Hostile input is refused (Linux gate)
         run: bash test/gates/refusals.sh
       - name: Sensor, power and helper parsing against a fake /sys
@@ -50,7 +50,7 @@ jobs:
     name: Gate tests + helper build (macOS)
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Hostile input is refused (macOS gate)
         run: bash test/gates/refusals.sh
       - name: The native helpers still compile
@@ -66,7 +66,7 @@ jobs:
     name: Windows scripts (parse + analyzer)
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Every PowerShell script parses
         shell: pwsh
         run: |
@@ -96,7 +96,7 @@ jobs:
     name: Docker image builds and answers
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: docker-compose.yml is valid
         run: docker compose config -q
       - name: Build
