@@ -16,10 +16,14 @@ export function mountExtras({ api, $, el, pageHas, getIdx, WMO, token }) {
   // ============================================================ world clocks
   const DEFAULT_CLOCKS = ['UTC', 'America/New_York', 'Europe/London', 'Asia/Kolkata', 'Asia/Tokyo'];
   let clocks = null, clocksEdit = false;
-  const ZONES = (() => { try { return Intl.supportedValuesOf('timeZone'); } catch { return DEFAULT_CLOCKS; } })();
+  // Validate a zone by asking Intl, not by looking it up in supportedValuesOf(): browsers list some zones under their old
+  // names (Chrome has Asia/Calcutta but not Asia/Kolkata), and a saved zone must never vanish for that reason.
+  const isZone = (z) => { try { new Intl.DateTimeFormat([], { timeZone: z }); return true; } catch { return false; } };
+  const MODERN = ['Asia/Kolkata', 'Asia/Kathmandu', 'Asia/Ho_Chi_Minh', 'Asia/Yangon', 'Europe/Kyiv', 'America/Argentina/Buenos_Aires', 'Pacific/Auckland'];
+  const ZONES = (() => { let base; try { base = Intl.supportedValuesOf('timeZone'); } catch { base = DEFAULT_CLOCKS; } return [...new Set([...base, ...MODERN.filter(isZone)])]; })();
   const city = (tz) => tz.split('/').pop().replace(/_/g, ' ');
   const fmtIn = (tz, o) => new Intl.DateTimeFormat([], { timeZone: tz, ...o });
-  async function loadClocks() { try { const v = await kvGet('clocks'); clocks = Array.isArray(v) && v.length ? v.filter((z) => ZONES.includes(z) || z === 'UTC') : DEFAULT_CLOCKS; } catch { clocks ??= DEFAULT_CLOCKS; } drawClocks(); }
+  async function loadClocks() { try { const v = await kvGet('clocks'); clocks = Array.isArray(v) && v.length ? v.filter((z) => typeof z === 'string' && isZone(z)) : DEFAULT_CLOCKS; } catch { clocks ??= DEFAULT_CLOCKS; } drawClocks(); }
   const saveClocks = () => kvPut('clocks', clocks);
   function drawClocks() {
     const box = $('clk-list'); if (!clocks) return;
