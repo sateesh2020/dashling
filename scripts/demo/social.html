@@ -1,0 +1,60 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Dashling social card</title>
+<!-- The repo's social preview / link-preview image (1280x640). Run `npm run demo`, open /_social, capture the 1280x640 card
+     (see CONTRIBUTING.md > Screenshots and GIFs). The panels in it are the real app on the fictional demo data. -->
+<style>
+  @font-face { font-family: "Inter"; src: url(/fonts/inter-var.woff2) format("woff2"); font-weight: 100 900; }
+  html, body { margin: 0; background: #05060f; }
+  .card { position: relative; width: 1280px; height: 640px; overflow: hidden; font-family: "Inter", system-ui, sans-serif; color: #eef2ff;
+    background: radial-gradient(900px 520px at 20% -10%, #14143f 0%, #05060f 70%); }
+  .blob { position: absolute; border-radius: 50%; filter: blur(80px); }
+  .b1 { width: 620px; height: 620px; left: -160px; top: -200px; background: radial-gradient(circle at 40% 40%, #7c5cff, transparent 65%); opacity: .55; }
+  .b2 { width: 620px; height: 620px; right: -160px; top: -60px; background: radial-gradient(circle, #00f0e0, transparent 65%); opacity: .32; }
+  .b3 { width: 640px; height: 520px; left: 280px; bottom: -300px; background: radial-gradient(circle, #ff2bd6, transparent 65%); opacity: .38; }
+  .grid { position: absolute; left: -10%; right: -10%; bottom: -6%; height: 44%; opacity: .26; transform: perspective(420px) rotateX(62deg); transform-origin: 50% 100%;
+    background-image: linear-gradient(#7c5cff 1px, transparent 1px), linear-gradient(90deg, #7c5cff 1px, transparent 1px); background-size: 52px 52px; mask-image: linear-gradient(to top, #000 10%, transparent 85%); }
+  .stars { position: absolute; inset: 0; opacity: .6; background-image: radial-gradient(1.4px 1.4px at 8% 20%, #fff, transparent), radial-gradient(1px 1px at 30% 78%, #cfe, transparent), radial-gradient(1.3px 1.3px at 47% 14%, #fff, transparent),
+    radial-gradient(1px 1px at 58% 60%, #fce, transparent), radial-gradient(1.2px 1.2px at 94% 12%, #fff, transparent), radial-gradient(1px 1px at 5% 85%, #fff, transparent), radial-gradient(1.2px 1.2px at 70% 90%, #cef, transparent); }
+  .text { position: absolute; left: 64px; top: 0; bottom: 0; width: 560px; display: flex; flex-direction: column; justify-content: center; }
+  .logo { display: flex; align-items: center; gap: 14px; margin-bottom: 22px; font-weight: 700; font-size: 26px; color: #9ea9cc; }
+  .logo svg { width: 46px; height: 46px; }
+  h1 { margin: 0; font-size: 124px; line-height: .98; letter-spacing: -.05em; font-weight: 800; background: linear-gradient(100deg, #00f0e0, #7c5cff 42%, #ff2bd6 78%, #ffb224); -webkit-background-clip: text; background-clip: text; color: transparent; padding-bottom: 8px; }
+  .tag { margin: 20px 0 30px; max-width: 500px; font-size: 34px; line-height: 1.25; font-weight: 600; letter-spacing: -.02em; color: #eef2ff; }
+  .chips { display: flex; flex-wrap: wrap; gap: 10px; }
+  .chip { padding: 8px 16px; border-radius: 999px; font-size: 20px; font-weight: 600; color: #cfd8ff; background: rgb(255 255 255 / .08); border: 1px solid rgb(255 255 255 / .16); }
+  .devs { position: absolute; left: 596px; top: 0; width: 664px; height: 640px; perspective: 1700px; }
+  .devs-in { position: absolute; inset: 0; transform: rotateY(-9deg) rotateX(2deg); transform-style: preserve-3d; }
+  .device { position: absolute; transform-origin: 0 0; background: #07070c; overflow: hidden; box-shadow: 0 0 0 2px #2c2c38, 0 40px 80px rgb(0 0 0 / .65), 0 0 90px rgb(124 92 255 / .35); }
+  .device iframe { display: block; border: 0; }
+  .tablet { border: 14px solid #0b0b12; border-radius: 34px; left: 0; top: 118px; transform: scale(.5); }
+  .tablet iframe { border-radius: 20px; }
+  .phone { border: 11px solid #0b0b12; border-radius: 46px; left: 448px; top: 188px; transform: scale(.5); box-shadow: 0 0 0 2px #2c2c38, 0 40px 80px rgb(0 0 0 / .7), 0 0 90px rgb(255 43 214 / .3); }
+  .phone iframe { border-radius: 36px; }
+</style>
+<div class="card" id="card">
+  <i class="blob b1"></i><i class="blob b2"></i><i class="blob b3"></i><i class="stars"></i><i class="grid"></i>
+  <div class="text">
+    <div class="logo"><svg viewBox="0 0 32 32"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#00f0e0"/><stop offset=".55" stop-color="#7c5cff"/><stop offset="1" stop-color="#ff2bd6"/></linearGradient></defs><rect x="2" y="2" width="28" height="28" rx="9" fill="url(#g)"/><path d="M6 19.5h4.2l2.6-8 3.6 12 2.8-9H26" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>Open source · self-hosted</div>
+    <h1>Dashling</h1>
+    <p class="tag">A dazzling desk dashboard for the phone in your drawer.</p>
+    <div class="chips"><span class="chip">iPhone · iPad · Android</span><span class="chip">macOS · Linux · Windows</span></div>
+  </div>
+  <div class="devs"><div class="devs-in">
+    <div class="device tablet"><iframe id="t" width="1100" height="700" title="Dashling on a tablet"></iframe></div>
+    <div class="device phone"><iframe id="p" width="390" height="800" title="Dashling on a phone"></iframe></div>
+  </div></div>
+</div>
+<script>
+  (async () => {
+    const { layout } = await (await fetch('/api/layout', { headers: { Authorization: 'Bearer demo' } })).json();
+    const idx = (id) => Math.max(0, layout.pages.findIndex((p) => p.id === id));
+    localStorage.setItem('dl_token', 'demo-token'); localStorage.setItem('dl_theme', 'cyber');
+    for (const [el, page] of [['t', 'system'], ['p', 'home']]) {        // one at a time: they share localStorage
+      localStorage.setItem('dl_page', String(idx(page)));
+      const f = document.getElementById(el);
+      await new Promise((ok) => { f.onload = ok; f.src = '/'; }); await new Promise((r) => setTimeout(r, 900));
+    }
+    document.title = 'ready';
+  })();
+</script>

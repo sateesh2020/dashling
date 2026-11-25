@@ -47,6 +47,7 @@ test('the main endpoints return the shapes the panel reads', async () => {
 test('the demo serves the real web app, and the stage page for screenshots', async () => {
   assert.match(await (await fetch(base + '/')).text(), /Dashling/);
   assert.match(await (await fetch(base + '/_stage')).text(), /Dashling demo stage/);
+  assert.match(await (await fetch(base + '/_social')).text(), /Dashling social card/);
   assert.equal((await fetch(base + '/extras.js')).status, 200);
 });
 

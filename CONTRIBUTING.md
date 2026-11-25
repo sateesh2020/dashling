@@ -58,6 +58,11 @@ The README images are taken from the demo, never from a real machine. To refresh
 
 Keep each image under about 250 KB and the GIF under about 2 MB.
 
+The **social preview** (`docs/img/social-preview.jpg`, 1280x640, the picture GitHub shows when the repo link is shared) and the website's link-preview
+image (`site/og.jpg`) come from `/_social`: open it with the demo running, capture the 1280x640 card, and scale it with `ffmpeg`
+(`scale=1280:640`, and `scale=1200:600,pad=1200:630:0:15:color=0x05060f` for `og.jpg`). GitHub has no API for the social preview, so upload it by hand
+under the repo's Settings > General > Social preview.
+
 ## Run the checks
 
 ```bash

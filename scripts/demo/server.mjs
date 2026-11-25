@@ -23,8 +23,9 @@ http.createServer(async (req, res) => {
       res.writeHead(r.status, { 'Content-Type': r.type, 'Cache-Control': 'no-store' });
       return res.end(r.body);
     }
-    const rel = url.pathname === '/' ? '/index.html' : url.pathname === '/_stage' ? null : url.pathname;
-    const file = rel === null ? path.join(here, 'stage.html') : path.resolve(WEB, '.' + rel);
+    const PAGES = { '/_stage': 'stage.html', '/_social': 'social.html' };          // screenshot helpers that live next to this file
+    const helper = PAGES[url.pathname], rel = helper ? null : url.pathname === '/' ? '/index.html' : url.pathname;
+    const file = helper ? path.join(here, helper) : path.resolve(WEB, '.' + rel);
     if (rel !== null && !file.startsWith(WEB + path.sep)) { res.writeHead(403); return res.end('forbidden'); }
     const data = await fs.readFile(file);
     res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
