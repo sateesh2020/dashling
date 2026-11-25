@@ -21,7 +21,7 @@
   <form id="login-form" class="card login-card">
     <div class="logo" data-icon="activity"></div>
     <h1>Dashling</h1>
-    <p id="login-hint" class="muted">Enter the 6-digit code shown in the Mac's terminal (<code>docker compose logs -f dashling</code>). This device is remembered afterwards.</p>
+    <p id="login-hint" class="muted">Enter the 6-digit code shown in the terminal of the computer running Docker (<code>docker compose logs -f dashling</code>). This device is remembered afterwards.</p>
     <input id="code" class="input" type="text" inputmode="numeric" pattern="[0-9 ]*" maxlength="7" autocomplete="one-time-code" placeholder="000 000" required>
     <input id="token" class="input" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Access token" hidden>
     <button type="submit" class="btn btn-default btn-lg">Connect</button>
@@ -66,7 +66,7 @@
       </article>
       <article data-w="now-playing" class="card m12 w12 mini-np" id="mini-np" role="button" tabindex="0" aria-label="Open media page">
         <div class="art art-sm"><img alt="" class="art-img" hidden><span class="art-ph" data-icon="music"></span></div>
-        <div class="np-text"><strong class="np-title">Nothing playing</strong><span class="muted np-artist">Play something on your Mac</span>
+        <div class="np-text"><strong class="np-title">Nothing playing</strong><span class="muted np-artist">Play something on your computer</span>
           <div class="progress"><i class="np-bar"></i></div></div>
         <div class="mini-ctl">
           <button class="btn btn-ghost btn-icon-lg" data-act="prev" aria-label="Previous" data-icon="skip-back"></button>
@@ -123,7 +123,7 @@
         <form id="fx-form" class="inline-form" hidden><input id="fx-cfg" class="input" placeholder="USD: EUR, GBP, INR" autocomplete="off"><button class="btn btn-default" type="submit">Save</button></form><p class="err" id="fx-err"></p><ul class="fxs" id="fx-list"></ul></article>
 
     <!-- MAC -->
-      <article data-w="controls" class="card m12 w6"><div class="card-head"><h2><span data-icon="window"></span>Mac controls</h2><span class="muted" id="ctl-msg"></span></div>
+      <article data-w="controls" class="card m12 w6"><div class="card-head"><h2><span data-icon="window"></span>Controls</h2><span class="muted" id="ctl-msg"></span></div>
         <div class="ctl-row"><span class="muted">Brightness</span><input id="bright" class="slider" type="range" min="0" max="100" value="50" aria-label="Display brightness"><b id="bright-val">--</b></div>
         <div class="ctl-btns"><button class="btn btn-secondary" id="btn-lock"><span data-icon="lock"></span>Lock</button><button class="btn btn-secondary" id="btn-dnd"><span data-icon="moon"></span>Do Not Disturb</button><button class="btn btn-secondary" data-act="sleep"><span data-icon="moon"></span>Display off</button></div>
       </article>
@@ -204,7 +204,7 @@
       <article data-w="media" class="card m12 w12 np-big">
         <div class="art art-lg"><img alt="" class="art-img" hidden><span class="art-ph" data-icon="music"></span></div>
         <div class="np-main">
-          <div class="np-text"><strong class="np-title big">Nothing playing</strong><span class="muted np-artist">Play something on your Mac</span><span class="muted np-album"></span></div>
+          <div class="np-text"><strong class="np-title big">Nothing playing</strong><span class="muted np-artist">Play something on your computer</span><span class="muted np-album"></span></div>
           <div class="seek"><span class="np-elapsed mono">0:00</span><input class="slider np-seek" type="range" min="0" max="100" value="0" step="1" aria-label="Seek"><span class="np-dur mono">0:00</span></div>
           <div class="controls">
             <button class="btn btn-ghost btn-icon-lg" data-act="prev" aria-label="Previous" data-icon="skip-back"></button>
@@ -212,7 +212,7 @@
             <button class="btn btn-ghost btn-icon-lg" data-act="next" aria-label="Next" data-icon="skip-forward"></button>
           </div>
           <div class="vol"><button class="btn btn-ghost btn-icon" data-act="mute" aria-label="Mute" id="mute-btn" data-icon="volume"></button>
-            <input id="volume" class="slider" type="range" min="0" max="100" step="1" value="0" aria-label="Mac volume"><span id="vol-sub" class="mono vol-num">0</span></div>
+            <input id="volume" class="slider" type="range" min="0" max="100" step="1" value="0" aria-label="Volume"><span id="vol-sub" class="mono vol-num">0</span></div>
         </div>
       </article>
     
@@ -222,11 +222,11 @@
       <article data-w="shortcuts" class="card m12 w12">
         <div class="card-head"><h2><span data-icon="bolt"></span>Shortcuts</h2><span><span id="deck-msg" class="muted"></span><button id="sc-edit" class="btn btn-ghost btn-sm">Edit</button></span></div>
         <div id="sc-grid" class="tiles"></div>
-        <p id="sc-empty" class="muted empty" hidden>No shortcuts yet. Tap Edit to add links, Mac apps, Home Assistant toggles or media actions.</p>
+        <p id="sc-empty" class="muted empty" hidden>No shortcuts yet. Tap Edit to add links, apps, Home Assistant toggles or media actions.</p>
         <form id="sc-form" class="sc-form" hidden>
           <div class="sc-row">
             <input id="sc-label" class="input" placeholder="Name" maxlength="24" autocomplete="off" required>
-            <select id="sc-type" class="input"><option value="url">Link / URL scheme</option><option value="app">Mac app</option><option value="ha">Home Assistant</option><option value="action">Media action</option></select>
+            <select id="sc-type" class="input"><option value="url">Link / URL scheme</option><option value="app">Computer app</option><option value="ha">Home Assistant</option><option value="action">Media action</option></select>
           </div>
           <div class="sc-row">
             <input id="sc-target" class="input" placeholder="https://… or shortcuts://run-shortcut?name=…" maxlength="300" autocomplete="off" autocapitalize="off" spellcheck="false">

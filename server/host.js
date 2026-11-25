@@ -57,7 +57,7 @@ export class HostConnector {
       for (const line of out.split('\n')) { const i = line.indexOf('='); if (i > 0) o[line.slice(0, i)] = line.slice(i + 1); }
       const num = k => (o[k] === undefined || o[k] === '' ? null : Number(o[k]));
       this.cache = {
-        name: o.name || 'Mac', cores: num('cores'),
+        name: o.name || 'Computer', cores: num('cores'),
         cpu: { user: num('cpu_user'), sys: num('cpu_sys'), idle: num('cpu_idle') },
         mem: { used: num('mem_used'), total: num('mem_total') },
         disk: { used: num('disk_used'), total: num('disk_total') },
@@ -222,7 +222,7 @@ export class HostConnector {
     return this.cached('calendar', 60_000, 'calendar', out => {
       const o = this.kv(out);
       const events = out.split('\n').filter(l => l.startsWith('ev=')).map(l => { const [s, e, a, cal, ...t] = l.slice(3).split('|'); return { start: Number(s), end: Number(e), allDay: a === '1', calendar: cal, title: t.join('|') }; });
-      return { setup: o.cal_setup === '1', denied: o.cal_denied === '1', events };
+      return { setup: o.cal_setup === '1', denied: o.cal_denied === '1', unsupported: o.cal_unsupported === '1', events };
     });
   }
   docker() {

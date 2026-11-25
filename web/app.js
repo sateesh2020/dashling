@@ -201,7 +201,7 @@ function procMsg(t) { $('procs-msg').textContent = t; clearTimeout(procMsgT); pr
 async function killProc(pid, force) {
   killing = null;
   try { const r = await api('/api/proc/kill', { method: 'POST', body: JSON.stringify({ pid, force }) }); procMsg(r.error ? r.error : force ? 'Force-killed' : 'Asked to quit'); }
-  catch (e) { if (e.message !== 'unauthorized') procMsg('Could not reach the Mac'); }
+  catch (e) { if (e.message !== 'unauthorized') procMsg('Could not reach your computer'); }
   setTimeout(pollStats, 700);
 }
 let lastProcs = [];
@@ -225,8 +225,8 @@ async function pollTemps() {
     const { temps } = await api('/api/temps'), box = $('temp-body'), sub = $('temp-sub');
     const msg = m => { box.replaceChildren(el('p', 'muted empty', m)); sub.textContent = ''; };
     if (!temps) return msg('no host');
-    if (temps.setup) return msg('Needs the sensor reader: run  ./host/install-fans.sh');
-    if (temps.none || !(temps.p.length + temps.e.length)) return msg('No temperature sensors found on this Mac.');
+    if (temps.setup) return msg('Needs the sensor reader: run  ./host/dashling.sh helpers');
+    if (temps.none || !(temps.p.length + temps.e.length)) return msg('No temperature sensors found on this computer.');
     const all = [...temps.p, ...temps.e]; sub.textContent = `hottest ${Math.max(...all)}°`;
     // one compact grid: P = performance cores, E = efficiency cores, G = GPU average
     const grid = el('div', 'tgrid');
@@ -236,7 +236,7 @@ async function pollTemps() {
     box.replaceChildren(grid, legend);
   } catch {}
 }
-// ---- power, battery health, Mac controls, calendar, docker: each polls only while its page is on screen
+// ---- power, battery health, Computer controls, calendar, docker: each polls only while its page is on screen
 const fmtW = v => v == null ? '--' : `${Math.abs(v) >= 10 ? Math.round(v) : v.toFixed(1)} W`;
 async function pollPower() {
   if (!pageHas(idx, 'power') && !pageHas(idx, 'batt-health')) return;
@@ -254,7 +254,7 @@ let ctlMsgT = null;
 const ctlMsg = t => { $('ctl-msg').textContent = t; clearTimeout(ctlMsgT); ctlMsgT = setTimeout(() => { $('ctl-msg').textContent = ''; }, 4000); };
 async function ctl(action, value) {
   try { const r = await api('/api/ctl', { method: 'POST', body: JSON.stringify({ action, value }) }); if (r.error) { ctlMsg(r.error); return false; } return true; }
-  catch (e) { if (e.message !== 'unauthorized') ctlMsg('Could not reach the Mac'); return false; }
+  catch (e) { if (e.message !== 'unauthorized') ctlMsg('Could not reach your computer'); return false; }
 }
 let brightTouch = false, brightSend = null;
 const bright = $('bright');
@@ -276,7 +276,8 @@ async function pollCalendar() {
     const { calendar: c } = await api('/api/calendar'), list = $('cal-list');
     const msg = m => list.replaceChildren(el('li', 'muted empty', m));
     if (!c) return msg('no host');
-    if (c.setup) return msg('Needs the Mac helpers: run  ./host/install-fans.sh');
+    if (c.unsupported) return msg('Calendar events are not available on this operating system yet.');
+    if (c.setup) return msg('Needs the helper install: run  ./host/dashling.sh helpers');
     if (c.denied) return msg('Calendar access is off for the SSH helper. Allow it in System Settings > Privacy > Calendars.');
     $('cal-sub').textContent = c.events.length ? `${c.events.length} upcoming` : '';
     if (!c.events.length) return msg('Nothing in the next two days.');
@@ -288,7 +289,7 @@ let obsMsgT = null, obsLiveArm = null, obsState = null;
 const obsMsg = t => { $('obs-msg').textContent = t; clearTimeout(obsMsgT); obsMsgT = setTimeout(() => { $('obs-msg').textContent = ''; }, 4500); };
 async function obsDo(action, value) {
   try { const r = await api('/api/obs', { method: 'POST', body: JSON.stringify({ action, value }) }); if (r.error) obsMsg(r.error); }
-  catch (e) { if (e.message !== 'unauthorized') obsMsg('Could not reach the Mac'); }
+  catch (e) { if (e.message !== 'unauthorized') obsMsg('Could not reach your computer'); }
   setTimeout(pollObs, 500);
 }
 $('obs-rec').addEventListener('click', () => obsDo(obsState?.recording ? 'record-stop' : 'record-start'));
@@ -319,7 +320,7 @@ let dkMsgT = null;
 async function dockerAct(act, name) {
   $('dk-msg').textContent = `${act}…`;
   try { const r = await api('/api/ctl', { method: 'POST', body: JSON.stringify({ action: 'docker', value: `${act} ${name}` }) }); $('dk-msg').textContent = r.error || `${name}: ${act} done`; }
-  catch (e) { if (e.message !== 'unauthorized') $('dk-msg').textContent = 'Could not reach the Mac'; }
+  catch (e) { if (e.message !== 'unauthorized') $('dk-msg').textContent = 'Could not reach your computer'; }
   clearTimeout(dkMsgT); dkMsgT = setTimeout(() => { $('dk-msg').textContent = ''; }, 4000); pollDocker(true);
 }
 let dkBusy = false;
@@ -328,7 +329,7 @@ async function pollDocker(force) {
   try {
     const { docker: d } = await api('/api/docker'), list = $('dk-list');
     if (!d) { list.replaceChildren(el('li', 'muted empty', 'no host')); return; }
-    if (d.down) { list.replaceChildren(el('li', 'muted empty', 'Docker is not running on the Mac.')); $('dk-sub').textContent = ''; return; }
+    if (d.down) { list.replaceChildren(el('li', 'muted empty', 'Docker is not running on your computer.')); $('dk-sub').textContent = ''; return; }
     const up = d.containers.filter(c => c.state === 'running').length; $('dk-sub').textContent = `${up} running · ${d.containers.length} total`;
     if (!d.containers.length) { list.replaceChildren(el('li', 'muted empty', 'No containers.')); return; }
     list.replaceChildren(...d.containers.map(c => {
@@ -343,8 +344,8 @@ async function pollFans() {
   try {
     const { fans } = await api('/api/fans'); const box = $('fan-list'), sub = $('fan-sub');
     if (!fans) { box.replaceChildren(el('p', 'muted empty', 'no host')); sub.textContent = ''; return; }
-    if (fans.setup) { box.replaceChildren(el('p', 'muted empty', 'Needs a one-time setup on the Mac: run  ./host/install-fans.sh')); sub.textContent = ''; return; }
-    if (fans.none || !fans.rpm.length) { box.replaceChildren(el('p', 'muted empty', 'This Mac reports no fans (or they are idle at 0 rpm).')); sub.textContent = ''; return; }
+    if (fans.setup) { box.replaceChildren(el('p', 'muted empty', 'Needs a one-time setup: run  ./host/dashling.sh helpers')); sub.textContent = ''; return; }
+    if (fans.none || !fans.rpm.length) { box.replaceChildren(el('p', 'muted empty', 'This computer reports no fans (or they are idle at 0 rpm).')); sub.textContent = ''; return; }
     sub.textContent = fans.rpm.length > 1 ? `${fans.rpm.length} fans` : '';
     box.replaceChildren(...fans.rpm.map((r, i) => { const d = el('div', 'fan'); const bar = el('div', 'progress'); const f = el('i'); f.style.width = `${Math.min(100, r / 65)}%`; bar.append(f);
       d.append(el('b', '', `${r.toLocaleString()} rpm`), bar); return d; }));
@@ -356,7 +357,7 @@ let msgT = null;
 function deckMsg(t) { $('deck-msg').textContent = t; clearTimeout(msgT); msgT = setTimeout(() => { $('deck-msg').textContent = ''; }, 3500); }
 async function act(action, name, value) {
   try { const r = await api('/api/action', { method: 'POST', body: JSON.stringify({ action, name, value }) }); if (r.error) deckMsg(r.error); else if (action !== 'seek') setTimeout(pollNP, 400); }
-  catch (e) { if (e.message !== 'unauthorized') deckMsg('Could not reach the Mac'); }
+  catch (e) { if (e.message !== 'unauthorized') deckMsg('Could not reach your computer'); }
 }
 function bindActs(root = document) { $$('[data-act]', root).forEach(b => b.addEventListener('click', e => { e.stopPropagation(); act(b.dataset.act); })); }
 bindActs();
@@ -376,7 +377,7 @@ async function pollNP() {
     const { np } = await api('/api/nowplaying');
     NP = np; npAt = performance.now();
     $$('.np-title').forEach(n => { n.textContent = np ? np.title : 'Nothing playing'; });
-    $$('.np-artist').forEach(n => { n.textContent = np ? np.artist : 'Play something on your Mac'; });
+    $$('.np-artist').forEach(n => { n.textContent = np ? np.artist : 'Play something on your computer'; });
     $$('.np-album').forEach(n => { n.textContent = np ? [np.album, np.source].filter(Boolean).join(' · ') : ''; });
     $$('.np-toggle').forEach(n => n.replaceChildren(icon(np?.playing ? 'pause' : 'play')));
     $$('.np-seek').forEach(s => { s.max = np?.duration || 100; s.disabled = !np?.duration; });
@@ -607,7 +608,7 @@ async function loadCode() {
     $('rv-err').hidden = !errs.length; $('rv-err').textContent = errs.join(' · ');
     $('code-dot').hidden = all.length === 0;
     const none = !d.github.enabled && !d.gitlab.enabled; $('rv-card').hidden = none;
-    if (none) { const m = cards.github; m.card.hidden = false; m.body.hidden = true; m.msg.hidden = false; m.msg.textContent = 'No code source connected. Connect your Mac (HOST_SSH) with gh and glab logged in, or set GITHUB_USER and GITHUB_TOKEN.'; }
+    if (none) { const m = cards.github; m.card.hidden = false; m.body.hidden = true; m.msg.hidden = false; m.msg.textContent = 'No code source connected. Connect your computer (HOST_SSH) with gh and glab logged in, or set GITHUB_USER and GITHUB_TOKEN.'; }
   } catch (e) { if (e.message !== 'unauthorized') { $('rv-err').hidden = false; $('rv-err').textContent = 'Code data unavailable right now.'; } }
 }
 
@@ -690,12 +691,12 @@ async function loadAI() {
   try {
     const d = await api('/api/ai'), msg = $('ai-msg');
     for (const [id] of TOOLS) aiCards[id].wrap.hidden = true;
-    if (!d.enabled) { msg.hidden = false; $('ai-msg-text').textContent = 'Connect your Mac (HOST_SSH) to see AI coding tool usage.'; return; }
+    if (!d.enabled) { msg.hidden = false; $('ai-msg-text').textContent = 'Connect your computer (HOST_SSH) to see AI coding tool usage.'; return; }
     if (d.error) { msg.hidden = false; $('ai-msg-text').textContent = `Usage data isn't ready yet: ${d.error}`; return; }
     let any = false;
     for (const [id] of TOOLS) if (d[id]) { aiCards[id].wrap.hidden = false; drawTool(aiCards[id], d[id]); any = true; }
     clearTimeout(aiFast); if (TOOLS.some(([id]) => d[id]?.scan)) aiFast = setTimeout(loadAI, 6000);      // poll quickly while a backfill is running
-    msg.hidden = any; if (!any) $('ai-msg-text').textContent = 'No AI coding tool usage found on this Mac yet (looked for Claude Code and Codex).';
+    msg.hidden = any; if (!any) $('ai-msg-text').textContent = 'No AI coding tool usage found on this computer yet (looked for Claude Code and Codex).';
   } catch (e) { if (e.message !== 'unauthorized') { $('ai-msg').hidden = false; $('ai-msg-text').textContent = 'AI usage unavailable right now.'; } }
 }
 

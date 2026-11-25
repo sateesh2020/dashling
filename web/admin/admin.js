@@ -163,13 +163,13 @@ window.addEventListener('beforeunload', e => { if (snap() !== orig) { e.preventD
 
 // ---------------------------------------------------------------- connections
 const SECTIONS = [
-  { key: 'host', title: 'Mac (SSH)', test: 'host', note: 'Where stats, now playing, GitHub/GitLab and AI usage come from. Format: login@host.docker.internal. Needs the SSH key set up as in the README.',
-    fields: [['target', 'Mac login', 'text', 'you@host.docker.internal']] },
+  { key: 'host', title: 'Computer (SSH)', test: 'host', note: 'Where stats, now playing, GitHub/GitLab and AI usage come from. Format: login@host.docker.internal. Needs the SSH key set up as in the README.',
+    fields: [['target', 'Computer login', 'text', 'you@host.docker.internal']] },
   { key: 'ha', title: 'Home Assistant', test: 'ha', note: 'A long-lived access token. Only the entities listed here can be read or toggled.',
     fields: [['url', 'URL', 'url', 'http://homeassistant.local:8123'], ['token', 'Access token', 'secret'], ['entities', 'Entities (comma separated)', 'text', 'light.desk, switch.fan']] },
   { key: 'printer', title: '3D printer', test: 'printer', note: 'Moonraker (Klipper) or OctoPrint on your network.',
     fields: [['url', 'URL', 'url', 'http://voron.local:7125'], ['type', 'Type', 'select', ['moonraker', 'octoprint']], ['key', 'API key (OctoPrint)', 'secret']] },
-  { key: 'github', title: 'GitHub token', test: 'github', note: 'Optional. Only needed if the Mac connection is off. A token with no scopes is enough for public contributions.',
+  { key: 'github', title: 'GitHub token', test: 'github', note: 'Optional. Only needed if the computer connection is off. A token with no scopes is enough for public contributions.',
     fields: [['user', 'User name', 'text', 'octocat'], ['token', 'Token', 'secret']] },
 ];
 let CONN = null;
@@ -221,7 +221,7 @@ $('pair-btn').addEventListener('click', guard(async () => {
 $('dev-all').addEventListener('click', guard(async () => { if (confirm('Revoke every paired device?')) { await api('devices/all', 'DELETE'); loadDevices(); } }));
 
 // ---------------------------------------------------------------- diagnostics
-const CHECKS = [['host', 'Mac connection (SSH)'], ['ha', 'Home Assistant'], ['printer', '3D printer'], ['github', 'GitHub token'], ['internet', 'Internet (stocks, weather)']];
+const CHECKS = [['host', 'Computer connection (SSH)'], ['ha', 'Home Assistant'], ['printer', '3D printer'], ['github', 'GitHub token'], ['internet', 'Internet (stocks, weather)']];
 async function runChecks() {
   const ul = $('checks'); ul.replaceChildren();
   await Promise.all(CHECKS.map(async ([k, name]) => {

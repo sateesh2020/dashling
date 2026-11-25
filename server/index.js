@@ -655,7 +655,7 @@ async function saveConn(b) {
   const next = { host: { ...conn.host }, ha: { ...conn.ha }, printer: { ...conn.printer }, github: { ...conn.github } };
   if (b.host) {
     const t = String(b.host.target ?? '').trim();
-    if (t && !/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]{1,100}$/.test(t)) throw new Error('Mac login should look like you@host.docker.internal');
+    if (t && !/^[A-Za-z0-9._-]{1,64}@[A-Za-z0-9.-]{1,100}$/.test(t)) throw new Error('Computer login should look like you@host.docker.internal');
     next.host.target = t;
   }
   if (b.ha) {
@@ -677,9 +677,9 @@ async function testConn(name) {
   const t0 = Date.now(), done = (ok, msg) => ({ ok, ms: Date.now() - t0, msg });
   try {
     if (name === 'host') {
-      if (!host.enabled) return done(false, 'Not configured (set the Mac login)');
+      if (!host.enabled) return done(false, 'Not configured (set the computer login)');
       const out = await host.run('stats', 10_000);
-      return done(true, 'Connected to ' + ((out.match(/^name=(.*)$/m) || [])[1] || 'the Mac'));
+      return done(true, 'Connected to ' + ((out.match(/^name=(.*)$/m) || [])[1] || 'your computer'));
     }
     if (name === 'ha') {
       if (!HA_URL || !HA_TOKEN) return done(false, 'Not configured');
@@ -690,7 +690,7 @@ async function testConn(name) {
       await pr(PRINTER_TYPE === 'octoprint' ? '/api/version' : '/server/info'); return done(true, PRINTER_TYPE + ' answered');
     }
     if (name === 'github') {
-      if (!GH_TOKEN) return done(false, 'Not configured (the Mac connection can fetch GitHub without a token)');
+      if (!GH_TOKEN) return done(false, 'Not configured (the computer connection can fetch GitHub without a token)');
       const r = await fetch('https://api.github.com/user', { headers: { Authorization: 'Bearer ' + GH_TOKEN, 'User-Agent': 'dashling' }, signal: AbortSignal.timeout(8000) });
       if (!r.ok) return done(false, 'GitHub answered ' + r.status);
       return done(true, 'Token belongs to ' + (await r.json()).login);

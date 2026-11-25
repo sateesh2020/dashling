@@ -7,8 +7,8 @@ set -euo pipefail
 cd "$(dirname "$0")"
 DEST="$HOME/.dashling"; LABEL="dev.dashling.contrib"; PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 mkdir -p "$DEST/cache" "$HOME/Library/LaunchAgents"
-install -m 755 contrib-sync.sh "$DEST/contrib-sync.sh"
-install -m 755 ai-usage-sync.sh "$DEST/ai-usage-sync.sh"
+install -m 755 ../common/contrib-sync.sh "$DEST/contrib-sync.sh"
+install -m 755 ../common/ai-usage-sync.sh "$DEST/ai-usage-sync.sh"
 cat > "$PLIST" <<PL
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">

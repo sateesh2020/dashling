@@ -5,6 +5,10 @@
 # Incremental: remembers how far it has read each log, so a run only parses new bytes.
 # Output: ~/.dashling/cache/ai.json (read by the SSH gate). Log formats are not documented APIs.
 set -u
+# stat differs between macOS (BSD) and Linux (GNU): pick the right flag and format codes once
+TAB=$'\t'
+if stat --version >/dev/null 2>&1; then STATF=(stat -c); F_NEWEST='%Y %n'; F_FULL="%Y${TAB}%n${TAB}%s"
+else STATF=(stat -f); F_NEWEST='%m %N'; F_FULL="%m${TAB}%N${TAB}%z"; fi
 export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/usr/local/bin LC_ALL=C
 C="$HOME/.dashling/cache"; A="$C/ai"; mkdir -p "$A"
 command -v jq >/dev/null || { echo "jq is required (macOS 15+ has it; otherwise: brew install jq)" > "$C/ai.err"; exit 0; }
@@ -44,7 +48,7 @@ extract_codex() {                      # $1 = log file (session id from the name
 # Codex also records plan-limit readings in its logs: take the newest one
 limits_codex() {
   local newest
-  newest=$(find "$1" -name '*.jsonl' -mtime -$DAYS -exec stat -f '%m %N' {} + 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
+  newest=$(find "$1" -name '*.jsonl' -mtime -$DAYS -exec "${STATF[@]}" "$F_NEWEST" {} + 2>/dev/null | sort -rn | head -1 | cut -d' ' -f2-)
   [ -n "$newest" ] || { echo null; return; }
   grep -a '"token_count"' "$newest" | tail -1 | jq -c '
       select(.payload.rate_limits != null) | .payload.rate_limits as $r | (.timestamp | sub("\\.[0-9]+Z$";"Z") | fromdateiso8601) as $t
@@ -122,7 +126,7 @@ sync_tool() {                          # $1 = tool name, $2 = log root, $3 = ext
   touch "$OFF" "$ENT"
 
   # 1) which logs changed: join current sizes with saved offsets; work list is newest-first
-  find "$ROOT" -name '*.jsonl' -mtime -$DAYS -exec stat -f "%m$TAB%N$TAB%z" {} + 2>/dev/null > "$D/cur.tmp"
+  find "$ROOT" -name '*.jsonl' -mtime -$DAYS -exec "${STATF[@]}" "$F_FULL" {} + 2>/dev/null > "$D/cur.tmp"
   awk -F'\t' -v W="$D/work.unsorted.tmp" -v K="$D/keep.tmp" 'FILENAME==ARGV[1]{o[$1]=$2;next}
     {p=$2; off=(p in o)?o[p]:0; if($3<off)off=0; if($3>off) print $1"\t"p"\t"$3"\t"off > W; else print p"\t"$3 > K}' "$OFF" "$D/cur.tmp"
   touch "$D/work.unsorted.tmp" "$D/keep.tmp"

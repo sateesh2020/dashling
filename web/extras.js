@@ -261,7 +261,7 @@ export function mountExtras({ api, $, el, pageHas, getIdx, WMO, token }) {
     if (!on('photos')) return;
     try {
       const r = await api('/api/photos'); photos = (r.photos || []).slice().sort(() => Math.random() - 0.5);
-      if (!photos.length) { $('ph-msg').hidden = false; $('ph-msg').textContent = r.error ? 'Could not reach the Mac.' : 'No photos yet. Put pictures (or a symlink to a folder) in ~/.dashling/photos on the Mac.'; return; }
+      if (!photos.length) { $('ph-msg').hidden = false; $('ph-msg').textContent = r.error ? 'Could not reach your computer.' : 'No photos yet. Put pictures (or a symlink to a folder) in ~/.dashling/photos on your computer.'; return; }
       $('ph-msg').hidden = true; if (pIdx < 0) nextPhoto();
     } catch {}
   }

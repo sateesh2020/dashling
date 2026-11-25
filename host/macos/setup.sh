@@ -38,12 +38,12 @@ touch ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys
 sed -i '' -e '/dashling-container/d' -e '/phonebox-container/d' ~/.ssh/authorized_keys     # replace any previous key (including the old PhoneBox one)
 echo "command=\"$DEST/dashling-gate.sh\",restrict $(cat "$tmp/id_ed25519.pub")" >> ~/.ssh/authorized_keys
 
-./install-contrib-job.sh
+./install-jobs.sh
 
-read -r -p "Also add Dashling's Claude Code status-line hook (shows plan limits on the AI page; edits ~/.claude/settings.json, backed up, undo with install-claude-statusline.sh --remove)? [y/N] " hook
-[[ "$hook" == [yY]* ]] && ./install-claude-statusline.sh || echo "Skipped. Run ./host/install-claude-statusline.sh any time."
+read -r -p "Also add Dashling's Claude Code status-line hook (shows plan limits on the AI page; edits ~/.claude/settings.json, backed up, undo with ./host/dashling.sh statusline --remove)? [y/N] " hook
+[[ "$hook" == [yY]* ]] && ../common/install-claude-statusline.sh || echo "Skipped. Run ./host/dashling.sh statusline any time."
 
-./install-fans.sh || echo "(fan speed reader skipped; run ./host/install-fans.sh later)"
+./install-helpers.sh || echo "(helpers skipped; run ./host/dashling.sh helpers later)"
 
 echo; echo "Done. Now run:"
 echo "  HOST_SSH=$(whoami)@host.docker.internal docker compose up -d"
