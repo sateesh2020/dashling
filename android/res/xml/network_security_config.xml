@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The panel is served over plain http on your LAN. The app only ever navigates to the one
+     address you enter, so cleartext is allowed but never reaches any other host. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

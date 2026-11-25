@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<link rel="stylesheet" href="/admin.css">
+<title>Dashling admin</title>
+</head>
+<body>
+<header class="bar">
+  <div class="brand"><span id="logo"></span><b>Dashling</b><span class="muted">admin</span></div>
+  <nav class="tabs" id="tabs">
+    <button data-t="layout" class="on">Layout</button>
+    <button data-t="conn">Connections</button>
+    <button data-t="devices">Devices</button>
+    <button data-t="diag">Diagnostics</button>
+    <button data-t="logs">Logs</button>
+  </nav>
+  <span id="toast" class="toast" hidden></span>
+</header>
+
+<main>
+  <!-- LAYOUT -->
+  <section id="t-layout">
+    <div class="toolbar">
+      <p class="muted">Drag widgets between pages, or use the arrows. Devices pick up a saved layout within about 15 seconds and keep it across restarts.</p>
+      <div class="actions">
+        <span id="dirty" class="badge warn" hidden>Unsaved changes</span>
+        <button id="l-add" class="btn">Add page</button>
+        <button id="l-export" class="btn">Export</button>
+        <button id="l-import" class="btn">Import</button>
+        <button id="l-reset" class="btn">Reset to default</button>
+        <button id="l-revert" class="btn" disabled>Revert</button>
+        <button id="l-save" class="btn primary" disabled>Save layout</button>
+      </div>
+    </div>
+    <div class="split">
+      <div id="board" class="board"></div>
+      <aside class="preview">
+        <div class="head"><h2>Preview</h2>
+          <select id="pv-dev" aria-label="Device"><option value="wide">Tablet / desktop</option><option value="land">Phone, landscape</option><option value="port">Phone, portrait</option></select></div>
+        <div id="pv" class="pv wide"></div>
+        <p class="hint">A scaled sketch of your unsaved layout: block widths follow the widget sizes. Click a dock icon to see another page.</p>
+      </aside>
+    </div>
+    <dialog id="import-dlg"><form method="dialog"><h3>Import layout</h3><textarea id="import-text" rows="10" spellcheck="false" placeholder="Paste exported layout JSON"></textarea>
+      <div class="actions"><button value="cancel" class="btn">Cancel</button><button id="import-ok" value="ok" class="btn primary">Load into editor</button></div></form></dialog>
+  </section>
+
+  <!-- CONNECTIONS -->
+  <section id="t-conn" hidden>
+    <p class="muted">Saved in the data volume (secrets never leave the server and are not shown again). Changes apply immediately, no restart.</p>
+    <div class="grid" id="conn-grid"></div>
+  </section>
+
+  <!-- DEVICES -->
+  <section id="t-devices" hidden>
+    <div class="panel">
+      <h2>Pair a new device</h2>
+      <p class="muted">Generate a 6-digit code, then type it on the phone or tablet. It is valid for 5 minutes.</p>
+      <div class="actions"><button id="pair-btn" class="btn primary">Generate code</button><span id="pair-code" class="code"></span><span id="pair-left" class="muted"></span></div>
+    </div>
+    <div class="panel">
+      <div class="head"><h2>Paired devices</h2><button id="dev-all" class="btn danger">Revoke all</button></div>
+      <ul id="dev-list" class="list"></ul>
+      <p id="dev-empty" class="muted" hidden>No devices paired yet.</p>
+    </div>
+  </section>
+
+  <!-- DIAGNOSTICS -->
+  <section id="t-diag" hidden>
+    <div class="panel">
+      <div class="head"><h2>Connectivity checks</h2><button id="diag-run" class="btn primary">Run checks</button></div>
+      <ul id="checks" class="list"></ul>
+    </div>
+    <div class="panel">
+      <div class="head"><h2>Server</h2>
+        <span class="actions"><button id="diag-notif" class="btn">Send test notification</button><button id="diag-cache" class="btn">Clear caches</button></span></div>
+      <dl id="sys" class="kv"></dl>
+    </div>
+  </section>
+
+  <!-- LOGS -->
+  <section id="t-logs" hidden>
+    <div class="panel">
+      <div class="head"><h2>Server log</h2>
+        <span class="actions"><label class="chk"><input type="checkbox" id="log-auto" checked> Auto refresh</label><button id="log-copy" class="btn">Copy</button></span></div>
+      <pre id="log" class="log"></pre>
+    </div>
+  </section>
+</main>
+<script type="module" src="/admin.js"></script>
+</body>
+</html>

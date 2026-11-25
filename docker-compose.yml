@@ -1,0 +1,44 @@
+name: dashling
+services:
+  dashling:
+    build: .
+    image: dashling:local
+    ports:
+      - "${DASHLING_PORT:-8787}:8080"
+      # Admin page: bound to this computer's loopback only, so no phone or other machine can reach it.
+      - "127.0.0.1:${DASHLING_ADMIN_PORT:-8788}:8081"
+    environment:
+      # Your Mac login + hostname as seen from inside the container.
+      # Leave empty to run widgets-only without connecting to the Mac.
+      HOST_SSH: "${HOST_SSH:-}"
+      DASHLING_TOKEN: "${DASHLING_TOKEN:-}"   # optional; auto-generated on first run if empty
+      # Optional Home Assistant tiles. Only the listed entities can be read or toggled.
+      # Optional OBS Studio controls (OBS 28+: Tools > WebSocket Server Settings). Leave the password empty if auth is off.
+      OBS_URL: "${OBS_URL:-ws://host.docker.internal:4455}"
+      OBS_PASSWORD: "${OBS_PASSWORD:-}"
+      HA_URL: "${HA_URL:-}"                    # e.g. http://homeassistant.local:8123
+      HA_TOKEN: "${HA_TOKEN:-}"                # long-lived access token (stays server-side)
+      HA_ENTITIES: "${HA_ENTITIES:-}"          # e.g. light.desk,switch.fan
+      # Optional GitHub contributions + streak. Token needs no scopes (public data) or read:user.
+      GITHUB_USER: "${GITHUB_USER:-}"
+      GITHUB_TOKEN: "${GITHUB_TOKEN:-}"
+      # Optional 3D printer on your LAN. PRINTER_TYPE: moonraker (Klipper, default) or octoprint.
+      PRINTER_URL: "${PRINTER_URL:-}"          # e.g. http://voron.local:7125 or http://octopi.local
+      PRINTER_TYPE: "${PRINTER_TYPE:-moonraker}"
+      PRINTER_API_KEY: "${PRINTER_API_KEY:-}"  # OctoPrint API key (optional for Moonraker)
+    volumes:
+      - dashling-data:/data
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    # Hardening: nothing here can write to the image, gain privileges, or use raw capabilities.
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 100
+    mem_limit: 128m
+    restart: unless-stopped
+volumes:
+  dashling-data:

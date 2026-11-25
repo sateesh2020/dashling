@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dashling">
+<meta name="theme-color" content="#070714">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<script src="/theme-boot.js"></script>
+<link rel="stylesheet" href="/style.css">
+<title>Dashling</title>
+</head>
+<body>
+<div class="glow" aria-hidden="true"></div>
+
+<main id="login" hidden>
+  <form id="login-form" class="card login-card">
+    <div class="logo" data-icon="activity"></div>
+    <h1>Dashling</h1>
+    <p id="login-hint" class="muted">Enter the 6-digit code shown in the Mac's terminal (<code>docker compose logs -f dashling</code>). This device is remembered afterwards.</p>
+    <input id="code" class="input" type="text" inputmode="numeric" pattern="[0-9 ]*" maxlength="7" autocomplete="one-time-code" placeholder="000 000" required>
+    <input id="token" class="input" type="password" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Access token" hidden>
+    <button type="submit" class="btn btn-default btn-lg">Connect</button>
+    <button type="button" id="login-alt" class="btn btn-ghost btn-sm">Use access token instead</button>
+    <p id="login-err" class="err"></p>
+  </form>
+</main>
+
+<div id="shell" hidden>
+  <div id="toast" class="toast" hidden></div>
+  <header class="topbar">
+    <div class="titles"><h1 id="page-title">Home</h1><span id="host-name" class="muted">Dashling</span></div>
+    <div class="top-actions">
+      <span id="status" class="badge">connecting</span>
+      <button id="theme-btn" class="btn btn-outline btn-icon" aria-label="Change theme" aria-expanded="false" data-icon="palette"></button>
+    </div>
+  </header>
+
+  <div id="themes" class="card theme-sheet" hidden role="menu" aria-label="Theme"></div>
+
+  <button id="nav-prev" class="edge edge-l" aria-label="Previous page" data-icon="chevron-left"></button>
+  <button id="nav-next" class="edge edge-r" aria-label="Next page" data-icon="chevron-right"></button>
+
+  <div id="pager" class="pager"></div>
+  <div id="bin" hidden><em id="code-dot" hidden></em><em id="inbox-dot" hidden></em>
+
+    <!-- HOME -->
+    
+      <article data-w="clock" class="card m12 w5 clock-card">
+        <div id="time" class="big-time">--:--</div>
+        <div id="date" class="muted"></div>
+        <div class="chips"><span id="chip-batt" class="badge" hidden></span><span id="chip-up" class="badge" hidden></span></div>
+      </article>
+      <article data-w="weather" class="card m12 w7" id="card-wx">
+        <div class="card-head"><h2>Weather</h2><div><button id="wx-edit" class="btn btn-ghost btn-sm">City</button><button id="wx-units" class="btn btn-ghost btn-sm">°C</button></div></div>
+        <div id="wx-body" class="wx-body"></div>
+        <form id="wx-form" class="wx-search" hidden>
+          <input id="wx-q" class="input" placeholder="Search a city or place" maxlength="80" autocomplete="off" aria-label="Search a place">
+          <div id="wx-results" class="wx-results"></div>
+        </form>
+        <div id="wx-places" class="wx-places"></div>
+      </article>
+      <article data-w="now-playing" class="card m12 w12 mini-np" id="mini-np" role="button" tabindex="0" aria-label="Open media page">
+        <div class="art art-sm"><img alt="" class="art-img" hidden><span class="art-ph" data-icon="music"></span></div>
+        <div class="np-text"><strong class="np-title">Nothing playing</strong><span class="muted np-artist">Play something on your Mac</span>
+          <div class="progress"><i class="np-bar"></i></div></div>
+        <div class="mini-ctl">
+          <button class="btn btn-ghost btn-icon-lg" data-act="prev" aria-label="Previous" data-icon="skip-back"></button>
+          <button class="btn btn-secondary btn-icon-lg np-toggle" data-act="playpause" aria-label="Play or pause" data-icon="play"></button>
+          <button class="btn btn-ghost btn-icon-lg" data-act="next" aria-label="Next" data-icon="skip-forward"></button>
+        </div>
+      </article>
+      <article data-w="stat-cpu" class="card m6 w3 stat"><h2>CPU</h2><div class="ring" id="r-cpu-s"></div></article>
+      <article data-w="stat-mem" class="card m6 w3 stat"><h2>Memory</h2><div class="ring" id="r-mem-s"></div></article>
+      <article data-w="stat-disk" class="card m6 w3 stat"><h2>Disk</h2><div class="ring" id="r-disk-s"></div></article>
+      <article data-w="stat-batt" class="card m6 w3 stat"><h2>Battery</h2><div class="ring" id="r-batt-s"></div></article>
+    
+
+    <!-- SYSTEM -->
+    
+      <article data-w="chart-cpu" class="card m12 w6 chart-card"><div class="card-head"><h2><span data-icon="cpu"></span>CPU</h2><b class="chart-val" id="v-cpu">--</b></div>
+        <svg class="chart" id="g-cpu" aria-label="CPU history"></svg><p class="sub" id="cpu-sub"></p></article>
+      <article data-w="chart-mem" class="card m12 w6 chart-card"><div class="card-head"><h2><span data-icon="layers"></span>Memory</h2><b class="chart-val" id="v-mem">--</b></div>
+        <svg class="chart" id="g-mem" aria-label="Memory history"></svg><p class="sub" id="mem-sub"></p></article>
+      <article data-w="chart-net" class="card m12 w8 chart-card"><div class="card-head"><h2><span data-icon="network"></span>Network</h2><span class="net-legend"><span class="lg l0">↓ <b id="v-rx">--</b></span><span class="lg l1">↑ <b id="v-tx">--</b></span></span></div>
+        <svg class="chart" id="g-net" aria-label="Network history"></svg><p class="sub" id="net-sub"></p></article>
+      <article data-w="disk" class="card m12 w4 stat-lg"><div class="card-head"><h2><span data-icon="drive"></span>Disk</h2></div><div class="ring" id="r-disk"></div><p class="sub" id="disk-sub"></p></article>
+      <article data-w="stat-up" class="card m6 w3 stat"><h2><span data-icon="timer"></span>Uptime</h2><b class="big-val" id="up-val">--</b><p class="sub" id="up-sub"></p></article>
+      <article data-w="stat-load" class="card m6 w3 stat"><h2><span data-icon="cpu"></span>Load</h2><b class="big-val" id="load-val">--</b><p class="sub" id="load-sub"></p></article>
+      <article data-w="power" class="card m12 w4 stat-lg"><div class="card-head"><h2><span data-icon="bolt"></span>Power</h2><span class="muted" id="pw-sub"></span></div><b class="big-val" id="pw-val">--</b><p class="sub" id="pw-detail"></p></article>
+      <article data-w="batt-health" class="card m12 w4"><div class="card-head"><h2><span data-icon="battery"></span>Battery health</h2><span class="muted" id="bh-sub"></span></div><b class="big-val" id="bh-val">--</b><div class="progress"><i id="bh-bar"></i></div><p class="sub" id="bh-detail"></p></article>
+      <article data-w="temps" class="card m12 w6"><div class="card-head"><h2><span data-icon="thermo"></span>Core temps</h2><span class="muted" id="temp-sub"></span></div><div id="temp-body" class="temps"></div></article>
+      <article data-w="fans" class="card m12 w6"><div class="card-head"><h2><span data-icon="thermo"></span>Fan speed</h2><span class="muted" id="fan-sub"></span></div><div id="fan-list" class="fans"></div></article>
+      <article data-w="procs" class="card m12 w6"><div class="card-head"><h2><span data-icon="layers"></span>Top processes</h2><span class="muted">CPU · MEM</span></div><ul class="procs" id="procs-list"></ul><p class="muted sub" id="procs-msg"></p></article>
+      <article data-w="battery" class="card m12 w12 batt-card"><div class="card-head"><h2><span data-icon="battery"></span>Battery</h2><span class="muted" id="batt-sub"></span></div><div class="progress thick"><i id="batt-bar"></i></div></article>
+    
+
+    <!-- TIME, PERSONAL, NEWS, PHOTOS -->
+      <article data-w="world-clocks" class="card m12 w6"><div class="card-head"><h2><span data-icon="globe"></span>World clocks</h2><button id="clk-edit" class="btn btn-ghost btn-sm">Edit</button></div><ul class="clks" id="clk-list"></ul>
+        <div id="clk-add" hidden><input id="clk-q" class="input" placeholder="Add a city or zone, e.g. Sydney" autocomplete="off" aria-label="Add a time zone"><div id="clk-res" class="wx-results"></div></div></article>
+      <article data-w="analog" class="card m12 w3 stat"><h2><span data-icon="timer"></span>Clock</h2><div id="an-box" class="an-box"></div><p class="sub" id="an-date"></p></article>
+      <article data-w="stopwatch" class="card m12 w4"><div class="card-head"><h2><span data-icon="timer"></span>Stopwatch</h2></div><b class="big-val sw-val" id="sw-val">0:00.0</b><div class="ctl-btns"><button class="btn btn-secondary" id="sw-go">Start</button><button class="btn btn-ghost" id="sw-reset" hidden>Reset</button></div></article>
+      <article data-w="countdown" class="card m12 w4"><div class="card-head"><h2><span data-icon="bell"></span>Countdown</h2><button id="cd-edit" class="btn btn-ghost btn-sm">Set</button></div><b class="big-val" id="cd-val">--</b><p class="sub" id="cd-label"></p>
+        <form id="cd-form" class="cd-form" hidden><input id="cd-name" class="input" placeholder="What for?" maxlength="40"><input id="cd-at" class="input" type="datetime-local"><button class="btn btn-default" type="submit">Save</button></form></article>
+      <article data-w="time-progress" class="card m12 w4"><div class="card-head"><h2><span data-icon="activity"></span>Time progress</h2></div><div class="tps" id="tp-list"></div></article>
+      <article data-w="forecast" class="card m12 w12"><div class="card-head"><h2><span data-icon="globe"></span>Forecast</h2><span class="muted" id="fc-sub"></span></div><div id="fc-body"></div></article>
+      <article data-w="sun-moon" class="card m12 w4"><div class="card-head"><h2><span data-icon="moon"></span>Sun &amp; moon</h2></div><div id="sm-body" class="sm"></div></article>
+      <article data-w="air" class="card m12 w4"><div class="card-head"><h2><span data-icon="activity"></span>Air quality</h2><span class="muted" id="air-sub"></span></div><div id="air-body"></div></article>
+      <article data-w="checklist" class="card m12 w6"><div class="card-head"><h2><span data-icon="check"></span>Daily checklist</h2><span class="muted" id="cl-sub"></span></div><ul class="cls" id="cl-list"></ul>
+        <form id="cl-form" class="inline-form"><input id="cl-new" class="input" placeholder="Add a daily item" maxlength="60" autocomplete="off"><button class="btn btn-default" type="submit">Add</button></form></article>
+      <article data-w="counter" class="card m12 w4"><div class="card-head"><h2><span data-icon="layers"></span>Counters</h2></div><div id="ct-list" class="cts"></div>
+        <form id="ct-form" class="inline-form"><input id="ct-new" class="input" placeholder="New counter" maxlength="24" autocomplete="off"><button class="btn btn-default" type="submit">Add</button></form></article>
+      <article data-w="quote" class="card m12 w6"><div id="q-box" class="q-box" role="button" tabindex="0" aria-label="Next quote"><p class="q-text" id="q-text"></p><p class="muted" id="q-by"></p></div></article>
+      <article data-w="photos" class="card m12 w6 ph-card"><div id="ph-box" class="ph-box" role="button" tabindex="0" aria-label="Next photo"><img id="ph-0" alt=""><img id="ph-1" alt=""><p id="ph-msg" class="muted empty ph-msg">Loading photos…</p><span id="ph-cap" class="ph-cap"></span></div></article>
+      <article data-w="hn" class="card m12 w6"><div class="card-head"><h2><span data-icon="link"></span>Hacker News</h2></div><ol class="nw" id="hn-list"></ol></article>
+      <article data-w="feeds" class="card m12 w6"><div class="card-head"><h2><span data-icon="globe"></span>News feeds</h2><button id="fd-edit" class="btn btn-ghost btn-sm">Feeds</button></div>
+        <form id="fd-form" class="fd-form" hidden><textarea id="fd-urls" class="textarea" rows="4" placeholder="https://example.com/feed.xml" spellcheck="false"></textarea><button class="btn btn-default" type="submit">Save feeds</button><p class="err" id="fd-err"></p></form><ul class="nw" id="fd-list"></ul></article>
+      <article data-w="rates" class="card m12 w4"><div class="card-head"><h2><span data-icon="trend"></span>Exchange rates</h2><button id="fx-edit" class="btn btn-ghost btn-sm">Edit</button></div><p class="muted sub fx-sub" id="fx-sub"></p>
+        <form id="fx-form" class="inline-form" hidden><input id="fx-cfg" class="input" placeholder="USD: EUR, GBP, INR" autocomplete="off"><button class="btn btn-default" type="submit">Save</button></form><p class="err" id="fx-err"></p><ul class="fxs" id="fx-list"></ul></article>
+
+    <!-- MAC -->
+      <article data-w="controls" class="card m12 w6"><div class="card-head"><h2><span data-icon="window"></span>Mac controls</h2><span class="muted" id="ctl-msg"></span></div>
+        <div class="ctl-row"><span class="muted">Brightness</span><input id="bright" class="slider" type="range" min="0" max="100" value="50" aria-label="Display brightness"><b id="bright-val">--</b></div>
+        <div class="ctl-btns"><button class="btn btn-secondary" id="btn-lock"><span data-icon="lock"></span>Lock</button><button class="btn btn-secondary" id="btn-dnd"><span data-icon="moon"></span>Do Not Disturb</button><button class="btn btn-secondary" data-act="sleep"><span data-icon="moon"></span>Display off</button></div>
+      </article>
+      <article data-w="obs" class="card m12 w6"><div class="card-head"><h2><span data-icon="video"></span>OBS</h2><span class="muted" id="obs-sub"></span></div>
+        <div class="obs-btns"><button class="btn btn-secondary" id="obs-rec"></button><button class="btn btn-ghost" id="obs-pause" hidden></button><button class="btn btn-secondary" id="obs-live"></button></div>
+        <div class="obs-scenes" id="obs-scenes"></div><p class="muted sub" id="obs-msg"></p></article>
+      <article data-w="calendar" class="card m12 w6"><div class="card-head"><h2><span data-icon="timer"></span>Up next</h2><span class="muted" id="cal-sub"></span></div><ul class="evs" id="cal-list"></ul></article>
+      <article data-w="docker" class="card m12 w6"><div class="card-head"><h2><span data-icon="layers"></span>Docker</h2><span class="muted" id="dk-sub"></span></div><ul class="dks" id="dk-list"></ul><p class="muted sub" id="dk-msg"></p></article>
+
+    <!-- CODE -->
+    
+      <div data-w="code" class="code-layout">
+        <div id="code-cards" class="code-main"></div>
+        <article class="card rv-card" id="rv-card">
+          <div class="card-head"><h2><span data-icon="review"></span>Needs your review</h2><span class="muted" id="rv-count"></span></div>
+          <ul id="rv-list" class="rv-list"></ul>
+          <p id="rv-empty" class="muted empty" hidden>Nothing waiting on you.</p>
+          <p id="rv-err" class="muted empty" hidden></p>
+        </article>
+      </div>
+    
+
+    <!-- AI -->
+    
+      <div data-w="ai" class="contents"><div id="ai-cards" class="contents"></div>
+      <article class="card m12 w12" id="ai-msg" hidden><p class="muted empty" id="ai-msg-text"></p></article></div>
+    
+
+    <!-- STOCKS -->
+    
+      <article data-w="stocks" class="card m12 w12">
+        <div class="card-head"><h2><span data-icon="trend"></span>Watchlist</h2>
+          <span><span class="tabs" id="st-ranges"><button class="tab on" data-r="1d">1D</button><button class="tab" data-r="5d">5D</button><button class="tab" data-r="1mo">1M</button><button class="tab" data-r="1y">1Y</button></span>
+          <button id="st-edit" class="btn btn-ghost btn-sm">Edit</button></span></div>
+        <div id="st-grid" class="ticks"></div>
+        <p id="st-empty" class="muted empty" hidden>No tickers yet. Tap Edit, then search for a company or ticker, e.g. Reliance, TCS.NS, AAPL, 7203.T, ^NSEI, BTC-USD.</p>
+        <div id="st-add" class="st-add" hidden>
+          <input id="st-q" class="input" placeholder="Search a company or ticker" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="40">
+          <ul id="st-results" class="st-results"></ul>
+        </div>
+        <p id="st-err" class="err"></p>
+        <p class="muted ai-note">Prices from Yahoo Finance; some exchanges are delayed. Not financial advice.</p>
+      </article>
+    
+
+    <!-- PRINTER -->
+    
+      <div data-w="printer" class="contents">
+      <article class="card m12 w7 print-card" id="pr-main" hidden>
+        <div class="card-head"><h2><span data-icon="printer"></span>3D Printer</h2><span id="pr-state" class="badge">--</span></div>
+        <div class="print-body">
+          <div class="ring ring-lg" id="r-print"></div>
+          <div class="print-info">
+            <strong id="pr-file" class="pr-file">No job</strong>
+            <span class="muted" id="pr-time"></span>
+            <span class="muted" id="pr-type"></span>
+            <div class="row left">
+              <button id="pr-pause" class="btn btn-secondary" hidden>Pause</button>
+              <button id="pr-resume" class="btn btn-default" hidden>Resume</button>
+              <button id="pr-cancel" class="btn btn-outline" hidden>Cancel print</button>
+            </div>
+            <p id="pr-msg" class="muted"></p>
+          </div>
+        </div>
+      </article>
+      <article class="card m12 w5 temps-card" id="pr-temps" hidden>
+        <div class="card-head"><h2><span data-icon="thermo"></span>Temperatures</h2></div>
+        <div class="temp"><div class="temp-row"><span>Nozzle</span><b id="t-noz">--</b></div><div class="progress"><i id="tb-noz"></i></div></div>
+        <div class="temp"><div class="temp-row"><span>Bed</span><b id="t-bed">--</b></div><div class="progress"><i id="tb-bed"></i></div></div>
+      </article>
+      <article class="card m12 w12" id="pr-empty" hidden><div class="card-head"><h2><span data-icon="printer"></span>3D Printer</h2></div>
+        <p class="muted empty">No printer connected. Set <code>PRINTER_URL</code> (e.g. <code>http://voron.local:7125</code>), <code>PRINTER_TYPE</code> (<code>moonraker</code> or <code>octoprint</code>) and, for OctoPrint, <code>PRINTER_API_KEY</code>.</p></article>
+      </div>
+    
+
+    <!-- MEDIA -->
+    
+      <article data-w="media" class="card m12 w12 np-big">
+        <div class="art art-lg"><img alt="" class="art-img" hidden><span class="art-ph" data-icon="music"></span></div>
+        <div class="np-main">
+          <div class="np-text"><strong class="np-title big">Nothing playing</strong><span class="muted np-artist">Play something on your Mac</span><span class="muted np-album"></span></div>
+          <div class="seek"><span class="np-elapsed mono">0:00</span><input class="slider np-seek" type="range" min="0" max="100" value="0" step="1" aria-label="Seek"><span class="np-dur mono">0:00</span></div>
+          <div class="controls">
+            <button class="btn btn-ghost btn-icon-lg" data-act="prev" aria-label="Previous" data-icon="skip-back"></button>
+            <button class="btn btn-default btn-icon-xl np-toggle" data-act="playpause" aria-label="Play or pause" data-icon="play"></button>
+            <button class="btn btn-ghost btn-icon-lg" data-act="next" aria-label="Next" data-icon="skip-forward"></button>
+          </div>
+          <div class="vol"><button class="btn btn-ghost btn-icon" data-act="mute" aria-label="Mute" id="mute-btn" data-icon="volume"></button>
+            <input id="volume" class="slider" type="range" min="0" max="100" step="1" value="0" aria-label="Mac volume"><span id="vol-sub" class="mono vol-num">0</span></div>
+        </div>
+      </article>
+    
+
+    <!-- SHORTCUTS -->
+    
+      <article data-w="shortcuts" class="card m12 w12">
+        <div class="card-head"><h2><span data-icon="bolt"></span>Shortcuts</h2><span><span id="deck-msg" class="muted"></span><button id="sc-edit" class="btn btn-ghost btn-sm">Edit</button></span></div>
+        <div id="sc-grid" class="tiles"></div>
+        <p id="sc-empty" class="muted empty" hidden>No shortcuts yet. Tap Edit to add links, Mac apps, Home Assistant toggles or media actions.</p>
+        <form id="sc-form" class="sc-form" hidden>
+          <div class="sc-row">
+            <input id="sc-label" class="input" placeholder="Name" maxlength="24" autocomplete="off" required>
+            <select id="sc-type" class="input"><option value="url">Link / URL scheme</option><option value="app">Mac app</option><option value="ha">Home Assistant</option><option value="action">Media action</option></select>
+          </div>
+          <div class="sc-row">
+            <input id="sc-target" class="input" placeholder="https://… or shortcuts://run-shortcut?name=…" maxlength="300" autocomplete="off" autocapitalize="off" spellcheck="false">
+            <select id="sc-target-sel" class="input" hidden></select>
+            <input id="sc-color" class="color" type="color" value="#4da3ff" aria-label="Colour">
+          </div>
+          <div id="sc-icons" class="sc-icons" role="radiogroup" aria-label="Icon"></div>
+          <div class="row left"><button type="submit" class="btn btn-default">Add shortcut</button></div>
+          <p id="sc-err" class="err"></p>
+        </form>
+      </article>
+      <article data-w="media-keys" class="card m12 w12"><div class="card-head"><h2>Media keys</h2></div>
+        <div class="tiles">
+          <button class="tile" data-act="prev"><span data-icon="skip-back"></span>Previous</button>
+          <button class="tile" data-act="playpause"><span data-icon="play"></span>Play / Pause</button>
+          <button class="tile" data-act="next"><span data-icon="skip-forward"></span>Next</button>
+          <button class="tile" data-act="mute"><span data-icon="volume-x"></span>Mute</button>
+          <button class="tile" data-act="sleep"><span data-icon="moon"></span>Sleep display</button>
+        </div></article>
+      <article data-w="apps" class="card m12 w6"><div class="card-head"><h2>Apps</h2></div><div id="apps" class="tiles"></div></article>
+      <article data-w="ha" class="card m12 w6" id="card-ha"><div class="card-head"><h2>Home</h2></div><div id="ha" class="tiles"></div><p id="ha-empty" class="muted empty">Home Assistant isn't connected. Set HA_URL, HA_TOKEN and HA_ENTITIES.</p></article>
+    
+
+    <!-- FOCUS -->
+    
+      <article data-w="timer" class="card m12 w6 timer-card">
+        <div class="tabs"><button id="tab-timer" class="tab on">Timer</button><button id="tab-pomo" class="tab">Pomodoro</button></div>
+        <div class="ring ring-lg timer-ring" id="r-timer"></div>
+        <p id="tm-label" class="sub"></p>
+        <div id="tm-presets" class="row"><button class="btn btn-outline btn-sm preset" data-min="1">1m</button><button class="btn btn-outline btn-sm preset" data-min="5">5m</button><button class="btn btn-outline btn-sm preset" data-min="10">10m</button><button class="btn btn-outline btn-sm preset" data-min="25">25m</button></div>
+        <div class="row"><button id="tm-toggle" class="btn btn-default btn-lg">Start</button><button id="tm-reset" class="btn btn-secondary btn-lg">Reset</button></div>
+      </article>
+      <article data-w="notes" class="card m12 w6 notes-card"><div class="card-head"><h2>Notes</h2><span class="muted">saved on your server</span></div>
+        <textarea id="notes" class="textarea" placeholder="Scratchpad…" maxlength="20000"></textarea></article>
+    
+
+    <!-- INBOX -->
+    
+      <article data-w="inbox" class="card m12 w7"><div class="card-head"><h2>Notifications</h2></div>
+        <ul id="inbox" class="inbox"></ul>
+        <p id="inbox-empty" class="muted empty">Nothing yet. Post one: <code>POST /api/push</code> with your webhook key.</p></article>
+      <article data-w="values" class="card m12 w5"><div class="card-head"><h2>Values</h2></div>
+        <div id="values" class="values"></div>
+        <p id="values-empty" class="muted empty">Push a number from any script: <code>POST /api/value</code>.</p></article>
+    
+  </div>
+
+  <nav class="dock" id="dock" aria-label="Pages">
+    <span class="lens" id="lens" aria-hidden="true"></span>
+  </nav>
+</div>
+<script type="module" src="/app.js"></script>
+</body>
+</html>
