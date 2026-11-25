@@ -1,8 +1,9 @@
 name: dashling
 services:
   dashling:
-    build: .
-    image: dashling:local
+    # Default: the published multi-arch image (amd64 + arm64). Pin a version with DASHLING_TAG=0.1.0.
+    # To build from source instead, add docker-compose.build.yml (see README).
+    image: ghcr.io/sateesh2020/dashling:${DASHLING_TAG:-latest}
     ports:
       - "${DASHLING_PORT:-8787}:8080"
       # Admin page: bound to this computer's loopback only, so no phone or other machine can reach it.

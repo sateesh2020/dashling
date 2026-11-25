@@ -1,0 +1,14 @@
+# Build Dashling from THIS source tree instead of pulling the published image. Layer it on top of docker-compose.yml:
+#
+#   docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
+#
+# Make it permanent for this checkout by putting this line in your .env file
+# (on Windows use ; instead of :), then a plain `docker compose up -d --build` builds locally:
+#
+#   COMPOSE_FILE=docker-compose.yml:docker-compose.build.yml
+#
+# Contributors: do this, so you run your changes and not the published image.
+services:
+  dashling:
+    build: .
+    image: dashling:local

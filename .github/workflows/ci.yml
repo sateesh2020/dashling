@@ -97,8 +97,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: docker-compose.yml is valid
-        run: docker compose config -q
+      - name: Both compose setups are valid (published image, and local-build override)
+        run: |
+          docker compose config -q
+          docker compose -f docker-compose.yml -f docker-compose.build.yml config -q
+          docker compose config | grep -q 'image: ghcr.io/'
+          docker compose -f docker-compose.yml -f docker-compose.build.yml config | grep -q 'image: dashling:local'
       - name: Build
         run: docker build -t dashling:ci .
       - name: Start and wait for health

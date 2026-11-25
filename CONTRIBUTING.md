@@ -27,6 +27,10 @@ DATA_DIR=./.data PORT=8787 ADMIN_PORT=8788 DASHLING_TOKEN=dev-token node server/
 
 To work against a real machine, follow [host/README.md](host/README.md) and set `HOST_SSH`.
 
+**Running it in Docker as a contributor:** `docker compose up -d` runs the *published* image, not your changes. To run your own
+code, build from source: add `COMPOSE_FILE=docker-compose.yml:docker-compose.build.yml` to your (git-ignored) `.env`, then
+`docker compose up -d --build` (or pass `-f docker-compose.yml -f docker-compose.build.yml` each time).
+
 ## Run the checks
 
 ```bash

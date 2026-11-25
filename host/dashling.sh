@@ -58,7 +58,7 @@ update() {
   install -m 755 "$OSD/dashling-gate.sh" "$DEST/dashling-gate.sh" && ok "gate script refreshed"
   "./$OSD/install-helpers.sh"
   "./$OSD/install-jobs.sh"
-  echo "Done. If the panel's server code changed too, rebuild it:  docker compose build && docker compose up -d"
+  echo "Done. If the panel's server code changed too: docker compose pull && docker compose up -d   (building from source: add -f docker-compose.yml -f docker-compose.build.yml and --build)"
 }
 
 uninstall() {

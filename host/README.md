@@ -132,7 +132,8 @@ Everything lives under `~/.dashling/` (Windows: `%USERPROFILE%\.dashling\`) exce
 
 ```bash
 git pull && ./host/dashling.sh update          # new gate script, helpers, jobs (SSH key untouched)
-docker compose build && docker compose up -d   # if server/ or web/ changed too
+docker compose pull && docker compose up -d   # published image: pick up a new release
+# building from source instead? docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build
 ./host/dashling.sh uninstall                   # removes the key line, background jobs and ~/.dashling (asks first)
 ```
 

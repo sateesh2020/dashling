@@ -30,11 +30,25 @@ Setup is `./host/dashling.sh setup` on macOS and Linux, and `host\windows\dashli
 ## Quick start
 
 ```sh
-docker compose build
 ./host/dashling.sh setup               # one-time, asks before changing anything (see host/README.md; `update` after a git pull)
-HOST_SSH=$(whoami)@host.docker.internal docker compose up -d
+HOST_SSH=$(whoami)@host.docker.internal docker compose up -d     # pulls the published image, no build needed
 docker compose logs -f dashling           # shows pairing codes (and the access token on first run)
 ```
+
+### Published image or build from source
+
+`docker compose up -d` runs the **published image**, `ghcr.io/sateesh2020/dashling` (multi-architecture: `linux/amd64` and `linux/arm64`, so Intel and ARM Macs, Raspberry Pi and servers). You can also choose to **build it yourself**:
+
+| | Command |
+|---|---|
+| **Published image** (default) | `docker compose up -d` |
+| Pin a version (recommended) | `DASHLING_TAG=0.1.0 docker compose up -d` |
+| Update to the newest image | `docker compose pull && docker compose up -d` |
+| **Build from this source tree** | `docker compose -f docker-compose.yml -f docker-compose.build.yml up -d --build` |
+| Build locally every time | add `COMPOSE_FILE=docker-compose.yml:docker-compose.build.yml` to your `.env` (Windows: use `;` instead of `:`), then `docker compose up -d --build` |
+
+Both options use the same container name and data volume, so you can switch between them without losing your paired devices or settings.
+Building from source is for contributors and for anyone who wants to read and audit exactly what runs. The published image is built by CI from a tagged commit (see `.github/workflows/release.yml`).
 
 Open `http://<your-computer-ip>:8787` on the iPhone/iPad, it asks for a 6-digit pairing code. The code is printed in `docker compose logs -f dashling` when the login screen opens (valid 5 minutes, burned after 5 wrong guesses). Once paired, the device keeps its own key and never asks again. Then Add to Home Screen.
 Revoke every paired device with `docker compose exec dashling rm /data/devices.json` (the old access token still works as a fallback: tap "Use access token instead").

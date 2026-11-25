@@ -1,0 +1,55 @@
+name: Smoke test (published image)
+
+# Pulls the PUBLISHED image the way a user would (`docker compose up -d`) and checks that it runs.
+# Runs after every release, weekly, and on demand (Actions tab > Smoke test (published image) > Run workflow).
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to test (default: latest)"
+        default: latest
+  workflow_run:
+    workflows: [Release]
+    types: [completed]
+  schedule:
+    - cron: '17 5 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  published:
+    name: Pull, start, and check the published image
+    runs-on: ubuntu-latest
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
+    steps:
+      - uses: actions/checkout@v7
+      - name: Pull and start with the repo's own compose file
+        env:
+          DASHLING_TAG: ${{ inputs.tag || 'latest' }}
+          DASHLING_TOKEN: smoke-token-0123456789abcdef
+        run: |
+          docker compose pull
+          docker compose up -d
+          docker compose images
+      - name: Wait for it to answer
+        run: |
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8787/api/health && break; sleep 2; done
+          curl -fsS http://127.0.0.1:8787/api/health | grep -q '"ok":true'
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8787/api/stats); [ "$code" = 401 ]
+      - name: The image supports both architectures
+        env:
+          DASHLING_TAG: ${{ inputs.tag || 'latest' }}
+        run: |
+          archs=$(docker buildx imagetools inspect "ghcr.io/sateesh2020/dashling:${DASHLING_TAG}" | grep -E '^\s*Platform:' | tr -d ' ' | sort -u | tr '\n' ' ')
+          echo "$archs"
+          echo "$archs" | grep -q 'linux/amd64' && echo "$archs" | grep -q 'linux/arm64'
+      - name: Hardening is in effect (read-only root, no capabilities, non-root)
+        run: |
+          docker inspect dashling-dashling-1 --format '{{.HostConfig.ReadonlyRootfs}} {{.HostConfig.CapDrop}} {{.Config.User}}' | tee /dev/stderr | grep -q '^true \[ALL\] node'
+      - name: Logs on failure
+        if: failure()
+        run: docker compose logs
+      - name: Clean up
+        if: always()
+        run: docker compose down -v
