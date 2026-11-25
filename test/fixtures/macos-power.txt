@@ -1,0 +1,9 @@
+sys_w=24.9
+adapter_in_w=25.5
+batt_w=0.5
+ac=1
+nominalchargecapacity=7668
+adapter_rated_w=60
+temperature=3020
+designcapacity=8694
+cyclecount=234

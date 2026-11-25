@@ -1,0 +1,106 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  javascript:
+    name: JavaScript (syntax + tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: node scripts/check-syntax.mjs
+      - run: npm test
+
+  shell:
+    name: Shell (ShellCheck)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: ShellCheck + syntax
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq shellcheck
+          bash scripts/lint-shell.sh
+
+  gates-linux:
+    name: Gate tests (Linux)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hostile input is refused (Linux gate)
+        run: bash test/gates/refusals.sh
+      - name: Sensor, power and helper parsing against a fake /sys
+        run: bash test/gates/linux.sh
+
+  gates-macos:
+    name: Gate tests + helper build (macOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Hostile input is refused (macOS gate)
+        run: bash test/gates/refusals.sh
+      - name: The native helpers still compile
+        run: |
+          cd host/macos
+          clang -O2 -o /tmp/smcfan smcfan.c -framework IOKit
+          clang -O2 -o /tmp/dispctl dispctl.c -framework CoreGraphics -framework CoreFoundation
+          swiftc -O -o /tmp/calevents calevents.swift -Xlinker -sectcreate -Xlinker __TEXT -Xlinker __info_plist -Xlinker calevents-Info.plist
+      - name: dashling.sh runs
+        run: bash host/dashling.sh help
+
+  windows:
+    name: Windows scripts (parse + analyzer)
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Every PowerShell script parses
+        shell: pwsh
+        run: |
+          $bad = 0
+          foreach ($f in Get-ChildItem host/windows -Filter *.ps1) {
+            $tokens = $null; $errs = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile($f.FullName, [ref]$tokens, [ref]$errs)
+            if ($errs.Count) { $bad++; $errs | ForEach-Object { Write-Host "::error file=$($f.FullName),line=$($_.Extent.StartLineNumber)::$($_.Message)" } }
+            else { Write-Host "$($f.Name): parses OK" }
+          }
+          if ($bad) { exit 1 }
+      - name: PSScriptAnalyzer (errors only)
+        shell: pwsh
+        run: |
+          Install-Module PSScriptAnalyzer -Force -Scope CurrentUser
+          $r = Invoke-ScriptAnalyzer -Path host/windows -Recurse -Severity Error
+          $r | Format-Table -AutoSize
+          if ($r) { exit 1 }
+
+  docker:
+    name: Docker image builds and answers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: docker-compose.yml is valid
+        run: docker compose config -q
+      - name: Build
+        run: docker build -t dashling:ci .
+      - name: Start and wait for health
+        run: |
+          docker run -d --name dl -p 8080:8080 -e DASHLING_TOKEN=ci-token-0123456789abcdef -e OBS_URL= dashling:ci
+          for _ in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/api/health && break; sleep 1; done
+          curl -fsS http://127.0.0.1:8080/api/health | grep -q '"ok":true'
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/api/stats); [ "$code" = 401 ]
+      - name: Show logs on failure
+        if: failure()
+        run: docker logs dl

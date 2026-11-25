@@ -1,5 +1,7 @@
 # Dashling for iPhone & iPad
 
+[![CI](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml/badge.svg)](https://github.com/sateesh2020/dashling/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A desk-panel web app for your iPhone or iPad, served from a locked-down Docker container.
 Open it in Safari, tap **Share > Add to Home Screen**, and it runs full-screen like an app.
 Inspired by [ersinkoc/phonebox](https://github.com/ersinkoc/phonebox) (Android); this is an independent rewrite with its own code and name.
@@ -130,3 +132,7 @@ Dashling is its own code, but it borrows ideas and visual direction from these p
 - [zacharyinserra/deskhub](https://github.com/zacharyinserra/deskhub): the widget layout, the GitHub streak and contribution view, the CPU, memory and network graphs, 3D printer status, shortcuts, and the flat **Graphite** look.
 - [dustyPad](https://dustypad.com): the **Dot Matrix**, **Cyberdeck** and **Terminal** themes.
 - Fonts are bundled from [Fontsource](https://fontsource.org): Inter, JetBrains Mono, Doto and VT323, all under the SIL Open Font License.
+
+## Contributing
+
+Contributions are welcome, especially **platform reports for Linux and Windows**. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, the checks (`npm run check`), and how to add a widget or a gate command safely; [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) explains how the pieces fit; report security problems privately as described in [SECURITY.md](SECURITY.md). Licensed under the [MIT License](LICENSE).

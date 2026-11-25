@@ -1,0 +1,31 @@
+name: Platform report (Linux / Windows)
+description: Tell us what works and what doesn't on your system. This is the most useful report for Linux and Windows.
+labels: [platform]
+body:
+  - type: markdown
+    attributes: { value: "Linux is tested in containers and Windows has never run on real hardware, so real-world reports help a lot. Run `./host/dashling.sh status` (Windows: `host\\windows\\dashling.ps1 status`) and paste the result." }
+  - type: input
+    id: system
+    attributes: { label: "System", placeholder: "Fedora 40 GNOME Wayland, ThinkPad T14 / Windows 11, desktop PC" }
+    validations: { required: true }
+  - type: checkboxes
+    id: works
+    attributes:
+      label: What works
+      options:
+        - { label: "Stats (CPU, memory, disk, network, uptime)" }
+        - { label: "Top processes and quitting one" }
+        - { label: "Battery, power draw, battery health" }
+        - { label: "Fans and temperatures" }
+        - { label: "Brightness" }
+        - { label: "Volume, mute, media keys, now playing" }
+        - { label: "Lock and display off" }
+        - { label: "Docker" }
+        - { label: "Photo frame" }
+        - { label: "App launcher and shortcuts" }
+  - type: textarea
+    id: broken
+    attributes: { label: "What doesn't work, and any error text", description: "Remove tokens, hostnames and personal paths." }
+  - type: textarea
+    id: status
+    attributes: { label: "Output of the status command", render: shell }

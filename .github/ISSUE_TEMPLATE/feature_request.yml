@@ -1,0 +1,14 @@
+name: Feature or widget request
+description: Suggest a widget or improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes: { label: "What would you like, and what problem does it solve?" }
+    validations: { required: true }
+  - type: textarea
+    id: data
+    attributes: { label: "Where would the data come from?", description: "A free public API, a local command, the computer's sensors, something that needs an account or key? (We prefer no keys and no new dependencies.)" }
+  - type: dropdown
+    id: os
+    attributes: { label: "Which OS does it need to work on?", multiple: true, options: [macOS, Linux, Windows, All] }

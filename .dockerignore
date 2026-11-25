@@ -3,3 +3,9 @@ host
 scripts
 README.md
 *.md
+node_modules
+.github
+test
+docs
+package.json
+package-lock.json

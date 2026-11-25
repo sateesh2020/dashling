@@ -5,7 +5,8 @@ import net from 'node:net';
 // ---------- safe fetch: user-supplied feed URLs must never reach your LAN, the Mac, or cloud metadata
 const privateV4 = (ip) => { const [a, b] = ip.split('.').map(Number); return a === 10 || a === 127 || a === 0 || (a === 169 && b === 254) || (a === 172 && b >= 16 && b <= 31) || (a === 192 && b === 168) || (a === 100 && b >= 64 && b <= 127) || a >= 224; };
 const privateV6 = (ip) => { const s = ip.toLowerCase(); return s === '::1' || s === '::' || s.startsWith('fe80') || s.startsWith('fc') || s.startsWith('fd') || s.startsWith('::ffff:') || s.startsWith('ff'); };
-async function assertPublic(host) {
+async function assertPublic(rawHost) {
+  const host = rawHost.replace(/^\[|\]$/g, '');          // URL.hostname keeps the brackets around IPv6 literals
   if (net.isIP(host)) { if (net.isIPv4(host) ? privateV4(host) : privateV6(host)) throw new Error('address not allowed'); return; }
   const addrs = await dns.lookup(host, { all: true });
   if (!addrs.length || addrs.some(a => (a.family === 4 ? privateV4(a.address) : privateV6(a.address)))) throw new Error('address not allowed');

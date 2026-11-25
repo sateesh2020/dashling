@@ -1,0 +1,31 @@
+name: Bug report
+description: Something doesn't work as it should
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: { label: What happened, description: "What did you expect, and what did you get instead?" }
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes: { label: Steps to reproduce, placeholder: "1. Open the Time page\n2. ..." }
+    validations: { required: true }
+  - type: dropdown
+    id: host_os
+    attributes: { label: "OS of the computer being monitored", options: [macOS, Linux, Windows (experimental), Not connected / n/a] }
+    validations: { required: true }
+  - type: input
+    id: os_version
+    attributes: { label: "OS version / distro and desktop", placeholder: "macOS 15.7, Ubuntu 24.04 GNOME Wayland, Windows 11 23H2" }
+  - type: dropdown
+    id: client
+    attributes: { label: "Where you see the panel", options: [iPhone / iPad Safari, Android app, Android Chrome, Desktop browser] }
+  - type: input
+    id: version
+    attributes: { label: "Dashling version", description: "Commit hash or release tag; `git rev-parse --short HEAD`" }
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs and screenshots
+      description: "`docker compose logs dashling` and, for host problems, the output of `./host/dashling.sh status`. **Remove any tokens, hostnames or personal paths.**"
+      render: shell

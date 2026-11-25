@@ -44,6 +44,7 @@ export class ObsClient {
   }
 
   drop() {
+    clearTimeout(this.idle);
     try { this.ws?.close(); } catch {}
     this.ws = null; this.ready = null;
     for (const p of this.pending.values()) p.reject(new Error('down'));
@@ -52,7 +53,7 @@ export class ObsClient {
 
   async request(type, data) {
     await this.connect();
-    clearTimeout(this.idle); this.idle = setTimeout(() => this.drop(), 60_000);
+    clearTimeout(this.idle); this.idle = setTimeout(() => this.drop(), 60_000); this.idle.unref?.();
     const id = String(++this.seq);
     return new Promise((resolve, reject) => {
       const t = setTimeout(() => { this.pending.delete(id); reject(new Error('OBS did not answer')); }, 5000);

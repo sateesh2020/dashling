@@ -210,7 +210,7 @@ case "$cmd" in
     ;;
 
   photo-list)
-    ls -1 "$D/photos" 2>/dev/null | grep -iE '\.(jpe?g|png|webp|heic)$' | head -300
+    for f in "$D/photos"/*; do case "${f##*/}" in *.[jJ][pP][gG]|*.[jJ][pP][eE][gG]|*.[pP][nN][gG]|*.[wW][eE][bB][pP]|*.[hH][eE][iI][cC]) [ -f "$f" ] && printf '%s\n' "${f##*/}" ;; esac; done | head -300
     ;;
   photo-get\ *)
     # one photo from ~/.dashling/photos, shrunk to max 1600px JPEG (ImageMagick or libvips). Plain file names only: no paths.
@@ -220,7 +220,7 @@ case "$cmd" in
       f="$D/photos/$name"
       if have magick; then magick "$f" -auto-orient -resize '1600x1600>' -quality 72 jpeg:- 2>/dev/null
       elif have convert; then convert "$f" -auto-orient -resize '1600x1600>' -quality 72 jpeg:- 2>/dev/null
-      elif have vipsthumbnail; then t=$(mktemp "${TMPDIR:-/tmp}/dashphoto.XXXXXX.jpg"); vipsthumbnail "$f" -s 1600 -o "$t[Q=72]" >/dev/null 2>&1 && cat "$t"; rm -f "$t"
+      elif have vipsthumbnail; then t=$(mktemp "${TMPDIR:-/tmp}/dashphoto.XXXXXX.jpg"); vipsthumbnail "$f" -s 1600 -o "${t}[Q=72]" >/dev/null 2>&1 && cat "$t"; rm -f "$t"
       elif [[ "$name" =~ \.jpe?g$ ]]; then head -c 8000000 "$f"
       else echo "install imagemagick to show this photo type" >&2; exit 1; fi
     else echo "no such photo" >&2; exit 1; fi

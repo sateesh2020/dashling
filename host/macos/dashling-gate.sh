@@ -107,7 +107,7 @@ case "$cmd" in
     ;;
   photo-list)
     # photos you put (or symlink) in ~/.dashling/photos; names only
-    ls -1 "$HOME/.dashling/photos" 2>/dev/null | grep -iE '\.(jpe?g|png|webp|heic)$' | head -300
+    for f in "$HOME/.dashling/photos"/*; do case "${f##*/}" in *.[jJ][pP][gG]|*.[jJ][pP][eE][gG]|*.[pP][nN][gG]|*.[wW][eE][bB][pP]|*.[hH][eE][iI][cC]) [ -f "$f" ] && printf '%s\n' "${f##*/}" ;; esac; done | head -300
     ;;
   photo-get\ *)
     # one photo from that folder, shrunk to max 1600px JPEG so it is light on the phone. Plain file names only: no paths.

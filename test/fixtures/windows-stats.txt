@@ -1,0 +1,15 @@
+name=DESKTOP-AB12
+cores=16
+cpu_user=8
+cpu_sys=3
+cpu_idle=89
+mem_total=34359738368
+mem_used=17179869184
+disk_total=1000204886016
+disk_used=400000000000
+proc1=12|3.5|4120|1|chrome
+proc2=7|1.2|988|0|MsMpEng
+proc3=3|0.4|7788|1|Code
+boot=1795100000
+net_rx=2000000000
+net_tx=300000000
