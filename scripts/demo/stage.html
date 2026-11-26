@@ -25,6 +25,7 @@
     : q.get('themes') ? q.get('themes').split(',').map((t) => ({ p: page0, theme: t, w: 600, h: 375, frame: 'card' }))
     : [{ p: page0, theme: theme0, w: +q.get('w') || 390, h: +q.get('h') || 844, frame: q.get('frame') || 'none' }];
   const wrap = document.getElementById('wrap'); wrap.style.transform = `scale(${+q.get('scale') || 1})`;
+  if (q.get('cols')) wrap.style.justifyContent = 'center';
   if (q.get('cols')) wrap.style.width = `${+q.get('cols') * (specs[0].w + 40)}px`;
   (async () => {
     const { layout } = await (await fetch('/api/layout', { headers: { Authorization: 'Bearer demo' } })).json();

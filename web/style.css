@@ -812,7 +812,7 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:16px}
 :root[data-theme=clay] .progress i{background:#9a7ce0}
 :root[data-theme=clay] .progress.thick i{background:#5fcf9f}
 :root[data-theme=clay] .np-bar{background:#ff7fa8}
-:root[data-theme=clay] .chart .area{opacity:.25}
+:root[data-theme=clay] .chart .area{opacity:.13}
 :root[data-theme=clay] .chart .ln{stroke-width:3.5;stroke-linecap:round}
 :root[data-theme=clay] .chart .grid{opacity:.3}
 :root[data-theme=clay] .ring svg{filter:none}

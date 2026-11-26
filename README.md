@@ -49,11 +49,11 @@ It serves the real panel with invented data (a pretend MacBook, a pretend city, 
   </tr>
 </table>
 
-### Six themes
+### Themes
 
-<p align="center"><img src="docs/img/themes.jpg" alt="The same System page in six themes: Liquid Glass, Liquid Light, Graphite, Dot Matrix, Cyberdeck and Terminal" width="880"></p>
+<p align="center"><img src="docs/img/themes.jpg" alt="The same System page in several themes: Liquid Glass, Liquid Light, Graphite, Dot Matrix, Cyberdeck, Terminal and Claymorphism" width="880"></p>
 
-Liquid Glass, Liquid Light, Graphite, Dot Matrix, Cyberdeck and Terminal. Tap the palette button to switch; the choice is remembered per device. There are more pages not shown here (stocks, a 3D printer, shortcuts, notes, notifications, Home Assistant).
+Liquid Glass, Liquid Light, Graphite, Dot Matrix, Cyberdeck, Terminal and Claymorphism, with more to come. Tap the palette button to switch; the choice is remembered per device. There are more pages not shown here (stocks, a 3D printer, shortcuts, notes, notifications, Home Assistant).
 
 ## Supported computers
 
@@ -156,7 +156,7 @@ Clock, CPU, memory, disk, battery, weather (Open-Meteo, set your city in the car
 Mac volume, notes, control deck, notifications, pushed values, Home Assistant tiles.
 
 ## Themes
-Tap the palette button in the top bar: **Liquid Glass**, **Graphite** (flat, amber, DeskHub style), **Dot Matrix**, **Cyberdeck** and **Terminal** (the last three inspired by dustyPad), plus **Claymorphism** (soft, puffy pastel clay). Saved per device.
+Tap the palette button in the top bar: **Liquid Glass**, **Liquid Light**, **Graphite** (flat, amber, DeskHub style), **Dot Matrix**, **Cyberdeck** and **Terminal** (the last three inspired by dustyPad), plus **Claymorphism** (soft, puffy pastel clay). More themes are on the way. Saved per device.
 
 ### System graphs, GitHub, printer, shortcuts
 - **System**: live CPU, memory and network graphs (last ~5 minutes, kept on the server so reloads don't lose them). Network needs the updated gate script: re-run `./host/dashling.sh update` after pulling.
