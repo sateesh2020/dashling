@@ -749,6 +749,11 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:16px}
 .wx-chip-b,.wx-chip-x{border:0;background:none;color:inherit;font:inherit;font-size:.78rem;cursor:pointer;padding:5px 8px}.wx-chip-b{padding-left:12px}.wx-chip-x{color:var(--text-soft);padding-right:10px}
 @container (max-width:300px){.clks li{grid-template-columns:1fr auto}.clk-d{display:none}}
 
+/* widgets in a row share one height in every theme (some cards used to hug their content, so neighbours came out uneven);
+   the short stat cards centre their content in the taller box */
+.page>[data-w]{align-self:stretch}
+.page>[data-w=stat-up],.page>[data-w=stat-load],.page>[data-w=power],.page>[data-w=batt-health]{display:flex;flex-direction:column;justify-content:center}
+
 /* stocks header: the range tabs and Edit wrap under the title on a narrow card instead of sticking out (found with /_themetest) */
 [data-w=stocks] .card-head{flex-wrap:wrap}[data-w=stocks] .card-head>span{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 
@@ -816,10 +821,8 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:16px}
 :root[data-theme=clay] .logo{--t:217 95 142;background:#ffa8c5;color:#5b1a40;box-shadow:var(--clay)}
 :root[data-theme=clay] code{background:#d9c6f3}
 .sw-clay{background:radial-gradient(circle at 30% 28%,#fff 0 12%,transparent 13%),#ffa8c5;box-shadow:inset -3px -4px 6px rgb(217 95 142/.5),inset 3px 3px 5px rgb(255 255 255/.85)}
-/* widgets in a row share one height (the other themes let some cards hug their content), and sizes follow the card, not the screen */
-:root[data-theme=clay] [data-w]{align-self:stretch}
+/* sizes follow the card, not the screen */
 :root[data-theme=clay] [data-w=clock]{container-type:inline-size}
 :root[data-theme=clay] .big-time{font-size:clamp(2rem,17cqi,4.6rem)}
 :root[data-theme=clay] .timer-ring .rt{font-size:1.5rem}
 :root[data-theme=clay] .btn{line-height:1.2}
-:root[data-theme=clay] [data-w=stat-up],:root[data-theme=clay] [data-w=stat-load],:root[data-theme=clay] [data-w=power],:root[data-theme=clay] [data-w=batt-health]{display:flex;flex-direction:column;justify-content:center}
