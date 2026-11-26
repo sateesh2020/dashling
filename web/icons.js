@@ -9,6 +9,8 @@ const P = {
   'chevron-left': '<path d="m15 18-6-6 6-6"/>',
   'chevron-right': '<path d="m9 18 6-6-6-6"/>',
   play: '<path d="M7 4.5v15a1 1 0 0 0 1.5.85l12-7.5a1 1 0 0 0 0-1.7l-12-7.5A1 1 0 0 0 7 4.5Z" fill="currentColor"/>',
+  stop: '<rect x="5" y="5" width="14" height="14" rx="3" fill="currentColor"/>',
+  record: '<circle cx="12" cy="12" r="7" fill="currentColor"/>',
   pause: '<rect x="14" y="4" width="4" height="16" rx="1.2" fill="currentColor"/><rect x="6" y="4" width="4" height="16" rx="1.2" fill="currentColor"/>',
   'skip-back': '<path d="M19 5.2v13.6a.8.8 0 0 1-1.25.66L8 12.66a.8.8 0 0 1 0-1.32l9.75-6.8A.8.8 0 0 1 19 5.2Z" fill="currentColor"/><path d="M5 5v14"/>',
   'skip-forward': '<path d="M5 5.2v13.6a.8.8 0 0 0 1.25.66L16 12.66a.8.8 0 0 0 0-1.32L6.25 4.54A.8.8 0 0 0 5 5.2Z" fill="currentColor"/><path d="M19 5v14"/>',

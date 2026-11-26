@@ -293,25 +293,27 @@ async function obsDo(action, value) {
   setTimeout(pollObs, 500);
 }
 $('obs-rec').addEventListener('click', () => obsDo(obsState?.recording ? 'record-stop' : 'record-start'));
+// OBS buttons are an icon plus a short label (the long wording goes in aria-label), so they never wrap into several lines
+const obsBtn = (b, ic, text, label) => { b.replaceChildren(icon(ic), el('span', '', text)); b.setAttribute('aria-label', label || text); };
 $('obs-pause').addEventListener('click', () => obsDo('record-pause'));
 $('obs-live').addEventListener('click', () => {
   if (obsState?.streaming) return obsDo('stream-stop');
-  if (obsLiveArm) { clearTimeout(obsLiveArm); obsLiveArm = null; $('obs-live').textContent = 'Go live'; return obsDo('stream-start'); }
-  $('obs-live').textContent = 'Tap again to go live';
-  obsLiveArm = setTimeout(() => { obsLiveArm = null; $('obs-live').textContent = 'Go live'; }, 4000);
+  if (obsLiveArm) { clearTimeout(obsLiveArm); obsLiveArm = null; obsBtn($('obs-live'), 'bolt', 'Go live'); return obsDo('stream-start'); }
+  obsBtn($('obs-live'), 'bolt', 'Tap again');
+  obsLiveArm = setTimeout(() => { obsLiveArm = null; obsBtn($('obs-live'), 'bolt', 'Go live'); }, 4000);
 });
 async function pollObs() {
   if (!pageHas(idx, 'obs')) return;
   try {
     const { obs: o } = await api('/api/obs'), sc = $('obs-scenes'), sub = $('obs-sub'); obsState = o;
-    const off = (m, sd) => { $('obs-rec').disabled = $('obs-live').disabled = true; $('obs-rec').textContent = 'Record'; $('obs-live').textContent = 'Go live'; $('obs-pause').hidden = true; sc.replaceChildren(el('p', 'muted empty', m)); sub.textContent = sd || ''; };
+    const off = (m, sd) => { $('obs-rec').disabled = $('obs-live').disabled = true; obsBtn($('obs-rec'), 'record', 'Record'); obsBtn($('obs-live'), 'bolt', 'Go live'); $('obs-pause').hidden = true; sc.replaceChildren(el('p', 'muted empty', m)); sub.textContent = sd || ''; };
     if (!o || o.disabled) return off('OBS is not configured.');
     if (o.auth) return off('OBS needs its WebSocket password: set OBS_PASSWORD for the container.', 'locked');
     if (!o.up) return off('OBS is not running, or its WebSocket server is off (OBS > Tools > WebSocket Server Settings).', 'offline');
     $('obs-rec').disabled = $('obs-live').disabled = false;
-    $('obs-rec').textContent = o.recording ? `Stop recording ${o.recTime}` : 'Record'; $('obs-rec').classList.toggle('rec', o.recording);
-    $('obs-pause').hidden = !o.recording; $('obs-pause').textContent = o.paused ? 'Resume' : 'Pause';
-    if (!obsLiveArm) $('obs-live').textContent = o.streaming ? `Stop stream ${o.streamTime}` : 'Go live'; $('obs-live').classList.toggle('rec', o.streaming);
+    if (o.recording) obsBtn($('obs-rec'), 'stop', o.recTime, `Stop recording ${o.recTime}`); else obsBtn($('obs-rec'), 'record', 'Record'); $('obs-rec').classList.toggle('rec', o.recording);
+    $('obs-pause').hidden = !o.recording; obsBtn($('obs-pause'), o.paused ? 'play' : 'pause', o.paused ? 'Resume' : 'Pause');
+    if (!obsLiveArm) { if (o.streaming) obsBtn($('obs-live'), 'stop', o.streamTime, `Stop stream ${o.streamTime}`); else obsBtn($('obs-live'), 'bolt', 'Go live'); } $('obs-live').classList.toggle('rec', o.streaming);
     sub.textContent = o.streaming ? '● LIVE' : o.recording ? (o.paused ? 'paused' : '● REC') : `OBS ${o.version}`;
     sc.replaceChildren(...o.scenes.map(n => { const b = el('button', 'btn btn-sm ' + (n === o.scene ? 'btn-default' : 'btn-secondary'), n); b.addEventListener('click', () => obsDo('scene', n)); return b; }));
   } catch {}
@@ -849,8 +851,8 @@ $('sc-form').addEventListener('submit', async e => {
 
 // ---------------------------------------------------------------- themes
 const THEMES = [['glass', 'Liquid Glass', 'translucent, follows light/dark'], ['light', 'Liquid Light', 'translucent, always light'], ['graphite', 'Graphite', 'flat, amber, DeskHub style'], ['dots', 'Dot Matrix', 'black, one red dot'],
-  ['cyber', 'Cyberdeck', 'neon cyan & magenta'], ['terminal', 'Terminal', 'green phosphor CRT']];
-const THEME_BG = { glass: '#070714', light: '#e9eefb', graphite: '#0d0e11', dots: '#050505', cyber: '#07091A', terminal: '#020A03' };
+  ['cyber', 'Cyberdeck', 'neon cyan & magenta'], ['terminal', 'Terminal', 'green phosphor CRT'], ['clay', 'Claymorphism', 'soft, puffy pastel clay']];
+const THEME_BG = { glass: '#070714', light: '#e9eefb', graphite: '#0d0e11', dots: '#050505', cyber: '#07091A', terminal: '#020A03', clay: '#efe6ff' };
 function applyTheme(t) {
   if (!THEMES.some(x => x[0] === t)) t = 'glass';
   document.documentElement.setAttribute('data-theme', t); store.set('dl_theme', t);

@@ -156,7 +156,7 @@ Clock, CPU, memory, disk, battery, weather (Open-Meteo, set your city in the car
 Mac volume, notes, control deck, notifications, pushed values, Home Assistant tiles.
 
 ## Themes
-Tap the palette button in the top bar: **Liquid Glass**, **Graphite** (flat, amber, DeskHub style), **Dot Matrix**, **Cyberdeck** and **Terminal** (the last three inspired by dustyPad). Saved per device.
+Tap the palette button in the top bar: **Liquid Glass**, **Graphite** (flat, amber, DeskHub style), **Dot Matrix**, **Cyberdeck** and **Terminal** (the last three inspired by dustyPad), plus **Claymorphism** (soft, puffy pastel clay). Saved per device.
 
 ### System graphs, GitHub, printer, shortcuts
 - **System**: live CPU, memory and network graphs (last ~5 minutes, kept on the server so reloads don't lose them). Network needs the updated gate script: re-run `./host/dashling.sh update` after pulling.

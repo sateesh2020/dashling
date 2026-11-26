@@ -46,7 +46,7 @@
   // ---------- the live demo ----------
   const PAGES = [['home', 'Home'], ['system', 'System'], ['mac', 'Computer'], ['time', 'Time'], ['personal', 'Personal'], ['news', 'News'], ['code', 'Code'], ['ai', 'AI'], ['media', 'Media']];
   const THEMES = [['glass', 'Liquid Glass', 'linear-gradient(135deg,#7c5cff,#cfe3ff)'], ['light', 'Liquid Light', 'linear-gradient(135deg,#e9eefb,#c9b8ff)'], ['graphite', 'Graphite', 'linear-gradient(135deg,#2a2d33,#ffb224)'],
-    ['dots', 'Dot Matrix', 'linear-gradient(135deg,#111,#ff3b30)'], ['cyber', 'Cyberdeck', 'linear-gradient(135deg,#07091a,#00f0e0 55%,#ff2bd6)'], ['terminal', 'Terminal', 'linear-gradient(135deg,#020a03,#34ff6a)']];
+    ['dots', 'Dot Matrix', 'linear-gradient(135deg,#111,#ff3b30)'], ['cyber', 'Cyberdeck', 'linear-gradient(135deg,#07091a,#00f0e0 55%,#ff2bd6)'], ['terminal', 'Terminal', 'linear-gradient(135deg,#020a03,#34ff6a)'], ['clay', 'Claymorphism', 'linear-gradient(135deg,#ffb3cc,#c9b6ff)']];
   const stage = $('#demo'), inner = $('#stageInner'), tab = $('#devTablet'), phone = $('#devPhone'), fT = $('#frameTablet'), fP = $('#framePhone');
   if (!stage) return;
   let page = 0, theme = 'glass', tour = !reduce, userTouched = false, visible = true, started = false;

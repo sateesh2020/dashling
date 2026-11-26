@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashling theme test screen</title>
+<!-- Theme test screen. Run `npm run demo`, open http://localhost:8799/_themetest (add ?theme=clay; more presets: &w=390&h=844&width=3&mode=one&which=clock&scan=1&page=5 (page number, from 0)).
+     Shows the real panel with every widget, so you can switch theme, resize the panel (drag its corner), force every widget
+     to one width, show one widget on its own, and highlight anything that overflows or is clipped. Dev tool: not shipped to the Mac or the site.
+     Every new theme must be checked here (see CONTRIBUTING.md). -->
+<style>
+  :root { color-scheme: light dark; font: 14px/1.4 system-ui, sans-serif; }
+  body { margin: 0; display: grid; grid-template-columns: 270px 1fr; height: 100vh; background: #1d1e22; color: #e8e9ee; }
+  aside { padding: 14px; overflow: auto; background: #131417; border-right: 1px solid #2c2e35; display: flex; flex-direction: column; gap: 14px; }
+  h1 { font-size: 15px; margin: 0; } h2 { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: #8b8f9a; margin: 0 0 6px; }
+  label { display: block; margin-bottom: 6px; } select, button { font: inherit; width: 100%; padding: 6px 8px; border-radius: 6px; border: 1px solid #3a3d46; background: #23252b; color: inherit; }
+  button { cursor: pointer; } button.on { background: #3b5bdb; border-color: #3b5bdb; } .row { display: flex; gap: 6px; flex-wrap: wrap; } .row button { width: auto; flex: 1 1 auto; }
+  #size { font-variant-numeric: tabular-nums; color: #8b8f9a; } #report { font-size: 12px; max-height: 240px; overflow: auto; margin: 0; padding-left: 16px; } #report li { margin-bottom: 3px; } .bad { color: #ff8a8a; } .good { color: #6ee7a8; }
+  main { overflow: auto; padding: 16px; background: repeating-conic-gradient(#222328 0 25%, #1d1e22 0 50%) 0 0/20px 20px; }
+  #frame { resize: both; overflow: hidden; width: 1100px; height: 720px; min-width: 280px; min-height: 300px; max-width: none; border: 2px solid #5b6cff; border-radius: 10px; background: #000; }
+  iframe { width: 100%; height: 100%; border: 0; display: block; }
+</style>
+<aside>
+  <h1>Theme test screen</h1>
+  <section><h2>Theme</h2><select id="theme"></select></section>
+  <section><h2>Panel size (or drag the corner)</h2>
+    <div class="row" id="presets"></div><div id="size"></div></section>
+  <section><h2>Widgets</h2>
+    <label>Show <select id="which"></select></label>
+    <label>Force every widget to width <select id="width"><option value="">default</option></select></label>
+    <label><select id="mode"><option value="pages">Keep the normal pages</option><option value="one">All on one page</option></select></label></section>
+  <section><h2>Find problems</h2>
+    <button id="scan">Highlight overflow / clipping</button><ol id="report"></ol></section>
+</aside>
+<main><div id="frame"><iframe id="panel" title="Dashling"></iframe></div></main>
+<script type="module">
+  import { WIDGETS, WIDTHS, DEFAULT_LAYOUT } from '/widgets.js';
+  const $ = (id) => document.getElementById(id), q = new URLSearchParams(location.search);
+  const read = (k, d) => { try { return localStorage.getItem(k) ?? d; } catch { return d; } };
+
+  // themes come from app.js itself, so a new theme shows up here with no extra work
+  const src = await (await fetch('/app.js')).text();
+  const block = src.match(/const THEMES = \[([\s\S]*?)\];/)[1];
+  const themes = [...block.matchAll(/\['(\w+)',\s*'([^']+)'/g)].map((m) => [m[1], m[2]]);
+  $('theme').replaceChildren(...themes.map(([id, n]) => Object.assign(document.createElement('option'), { value: id, textContent: n })));
+  $('theme').value = themes.some((t) => t[0] === q.get('theme')) ? q.get('theme') : (themes.at(-1)?.[0] || 'glass');
+
+  $('which').replaceChildren(...[['', 'Everything'], ...WIDGETS.map((w) => [w.id, w.name])].map(([v, n]) => Object.assign(document.createElement('option'), { value: v, textContent: n })));
+  for (const w of WIDTHS) $('width').append(Object.assign(document.createElement('option'), { value: w, textContent: `${w} of 12 columns` }));
+
+  const SIZES = [['Phone', 390, 844], ['Phone wide', 844, 390], ['Tablet', 820, 1100], ['Laptop', 1280, 800], ['Wide', 1600, 900]];
+  for (const [n, w, h] of SIZES) { const b = Object.assign(document.createElement('button'), { textContent: n, title: `${w} x ${h}` }); b.onclick = () => { $('frame').style.width = w + 'px'; $('frame').style.height = h + 'px'; }; $('presets').append(b); }
+  new ResizeObserver(() => { const r = $('frame').getBoundingClientRect(); $('size').textContent = `${Math.round(r.width - 4)} x ${Math.round(r.height - 4)} px`; }).observe($('frame'));
+
+  function layout() {
+    const only = $('which').value, force = Number($('width').value) || 0, byId = new Map(WIDGETS.map((w) => [w.id, w]));
+    const mk = (id) => { const d = byId.get(id), it = { id }; if (force && d.resize) it.w = force; return it; };
+    if (only) return { pages: [{ id: 'one', title: byId.get(only).name.slice(0, 20), icon: 'grid', widgets: [mk(only)] }] };
+    if ($('mode').value === 'one') return { pages: [{ id: 'all', title: 'All widgets', icon: 'grid', widgets: WIDGETS.map((w) => mk(w.id)) }] };
+    return { pages: DEFAULT_LAYOUT.pages.map((p) => ({ ...p, widgets: p.widgets.map((w) => mk(w.id)) })) };
+  }
+  async function load() {
+    await fetch('/_themetest/layout', { method: 'POST', body: JSON.stringify(layout()) });
+    localStorage.setItem('dl_token', 'demo-token'); localStorage.setItem('dl_theme', $('theme').value); localStorage.setItem('dl_page', q.get('page') || '0');
+    $('report').replaceChildren(); $('panel').src = '/?t=' + Date.now();
+  }
+  for (const id of ['theme', 'which', 'width', 'mode']) $(id).addEventListener('change', load);
+
+  // overflow scan: runs inside the panel (same origin) and outlines what sticks out of its box or is cut off
+  $('scan').onclick = () => {
+    const d = $('panel').contentDocument, w = $('panel').contentWindow; if (!d?.body) return;
+    d.querySelectorAll('[data-tt-flag]').forEach((e) => { e.style.outline = ''; e.removeAttribute('data-tt-flag'); });
+    const insideClip = (e, card) => { for (let a = e.parentElement; a && a !== card.parentElement; a = a.parentElement) if (/(auto|scroll|hidden|clip)/.test(w.getComputedStyle(a).overflowX) && a !== e) return true; return false; };
+    const found = [], vw = d.documentElement.clientWidth, seen = new Set();
+    for (const card of d.querySelectorAll('[data-w]')) {
+      if (!card.offsetParent && card.getClientRects().length === 0) continue;
+      const wid = card.dataset.w, cr = card.getBoundingClientRect();
+      for (const e of [card, ...card.querySelectorAll('*')]) {
+        if (!e.getClientRects().length) continue;
+        const cs = w.getComputedStyle(e), r = e.getBoundingClientRect(), why = [];
+        if (cs.display === 'inline' || cs.position === 'fixed' || cs.position === 'absolute' && e !== card) continue;
+        const clips = /(hidden|clip)/.test(cs.overflowX), scrolls = /(auto|scroll)/.test(cs.overflowX);
+        if (!scrolls && e.scrollWidth > e.clientWidth + 1 && e.clientWidth > 0 && (clips || e === card)) why.push(`content ${e.scrollWidth}px wider than its ${e.clientWidth}px box`);
+        if (e !== card && r.width > 0 && (r.right > cr.right + 1 || r.left < cr.left - 1) && !scrolls && !insideClip(e, card)) why.push('sticks out of its card');
+        if (e.children.length === 0 && e.textContent.trim() && cs.textOverflow === 'ellipsis' && e.scrollWidth > e.clientWidth + 1) why.push('text is cut with an ellipsis');
+        if (why.length && !seen.has(e)) { seen.add(e); e.style.outline = '2px solid #ff2d55'; e.setAttribute('data-tt-flag', '1'); found.push(`${wid} › ${e.tagName.toLowerCase()}${e.className && typeof e.className === 'string' ? '.' + e.className.trim().split(/\s+/)[0] : ''}: ${why[0]}`); }
+      }
+    }
+    if (d.documentElement.scrollWidth > vw + 1) found.unshift(`page: scrolls sideways (${d.documentElement.scrollWidth}px in ${vw}px)`);
+    $('report').replaceChildren(...(found.length ? found.slice(0, 40) : ['Nothing flagged on this page']).map((t) => Object.assign(document.createElement('li'), { textContent: t, className: found.length ? 'bad' : 'good' })));
+  };
+  // presets from the address: ?theme=clay&w=390&h=844&width=3&mode=one&which=clock&scan=1
+  if (q.get('w')) $('frame').style.width = q.get('w') + 'px'; if (q.get('h')) $('frame').style.height = q.get('h') + 'px';
+  if (q.get('width')) $('width').value = q.get('width'); if (q.get('mode')) $('mode').value = q.get('mode'); if (q.get('which')) $('which').value = q.get('which');
+  await load();
+  if (q.get('scan')) $('panel').addEventListener('load', () => setTimeout($('scan').onclick, 1500), { once: true });
+</script>

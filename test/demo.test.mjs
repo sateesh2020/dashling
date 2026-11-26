@@ -48,6 +48,7 @@ test('the demo serves the real web app, and the stage page for screenshots', asy
   assert.match(await (await fetch(base + '/')).text(), /Dashling/);
   assert.match(await (await fetch(base + '/_stage')).text(), /Dashling demo stage/);
   assert.match(await (await fetch(base + '/_social')).text(), /Dashling social card/);
+  assert.match(await (await fetch(base + '/_themetest')).text(), /Dashling theme test screen/);
   assert.equal((await fetch(base + '/extras.js')).status, 200);
 });
 

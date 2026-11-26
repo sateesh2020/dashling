@@ -3,6 +3,7 @@
 @font-face{font-family:"JetBrains Mono";src:url(/fonts/jetbrains-mono-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
 @font-face{font-family:"JetBrains Mono";src:url(/fonts/jetbrains-mono-latin-700-normal.woff2) format("woff2");font-weight:700;font-display:swap}
 @font-face{font-family:"Doto";src:url(/fonts/doto-var.woff2) format("woff2");font-weight:100 900;font-display:swap}
+@font-face{font-family:"Fredoka";src:url(/fonts/fredoka-var.woff2) format("woff2");font-weight:300 700;font-display:swap}
 @font-face{font-family:"VT323";src:url(/fonts/vt323-latin-400-normal.woff2) format("woff2");font-weight:400;font-display:swap}
 /* Dashling: Liquid Glass look in plain CSS.
    Layers per surface: translucent fill + backdrop blur/saturate + specular edge + gradient rim + soft shadow.
@@ -747,3 +748,78 @@ select.input{appearance:none;-webkit-appearance:none;padding-right:16px}
 .wx-places{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.wx-chip{display:inline-flex;align-items:center;border-radius:99px;background:var(--groove);overflow:hidden}
 .wx-chip-b,.wx-chip-x{border:0;background:none;color:inherit;font:inherit;font-size:.78rem;cursor:pointer;padding:5px 8px}.wx-chip-b{padding-left:12px}.wx-chip-x{color:var(--text-soft);padding-right:10px}
 @container (max-width:300px){.clks li{grid-template-columns:1fr auto}.clk-d{display:none}}
+
+/* stocks header: the range tabs and Edit wrap under the title on a narrow card instead of sticking out (found with /_themetest) */
+[data-w=stocks] .card-head{flex-wrap:wrap}[data-w=stocks] .card-head>span{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+
+/* ================== CLAYMORPHISM ==================
+   Matches the reference at zerowing.in/ui-prompts/demo/styles/clay: flat pastel fills (no gradients), a different hue per card,
+   and one shadow recipe tinted with that hue: a tight white highlight (top-left), a tinted inner shade (bottom-right) and a tinted
+   drop shadow straight down. Pressed / "on" things flip the inner shadows. Soft colour blobs behind. Light only. */
+:root[data-theme=clay]{
+  --foreground:262 36% 31%; --muted-foreground:262 22% 46%; --primary:338 100% 74%; --ok:158 62% 28%; --warn:28 88% 36%; --destructive:2 70% 44%;
+  --radius:36px; --radius-sm:24px; --t:154 124 224;
+  --clay:inset 3px 4px 6px rgb(255 255 255/.85),inset -4px -6px 10px rgb(var(--t)/.42),0 10px 14px -6px rgb(var(--t)/.66);
+  --clay-in:inset 5px 6px 11px rgb(var(--t)/.5),inset -4px -5px 9px rgb(255 255 255/.75);
+  --glass-fill:#eadcfb; --glass-fill-hi:#f7f0ff; --glass-blur:none; --hl:none; --shadow:var(--clay); --rim:transparent;
+  --groove:#d9c6f3; --track:#d9c6f3; --fill:#9a7ce0; --lens:#fff; --text-soft:#76639a; --ink-on-primary:#5b1a40; --bg-base:#efe6ff;
+  --font:"Fredoka","Inter",system-ui,sans-serif; --font-display:"Fredoka","Inter",system-ui,sans-serif; --spec:transparent;
+  --chart1:#8a63e6; --chart2:#1fa97c; --chart3:#e8547d; --chart4:#e8941a;
+  --gh0:#d9c6f3; --gh1:#cdeedd; --gh2:#8fdcb8; --gh3:#3fbf8e; --gh4:#16a37a;
+}
+:root[data-theme=clay] body{color:hsl(var(--foreground));background:radial-gradient(48% 42% at 6% 6%,#ffb1cd,transparent 72%) fixed,radial-gradient(40% 36% at 52% 52%,#ffe9a8,transparent 72%) fixed,radial-gradient(46% 46% at 100% 100%,#bfe0ff,transparent 72%) fixed,#efe6ff}
+:root[data-theme=clay] .glow,:root[data-theme=clay] .card::after,:root[data-theme=clay] .card::before,:root[data-theme=clay] .dock::before,:root[data-theme=clay] .tile::before,:root[data-theme=clay] .tabs::before,:root[data-theme=clay] .badge::after,:root[data-theme=clay] .btn-outline::before,:root[data-theme=clay] .btn-secondary::before,:root[data-theme=clay] .login-card::before,:root[data-theme=clay] .edge::before,:root[data-theme=clay] .toast::before{display:none}
+/* a different pastel per card; the tint (--t) drives its shadows */
+:root[data-theme=clay] [data-w]:nth-child(5n+2).card,:root[data-theme=clay] [data-w]:nth-child(5n+2) .card{--glass-fill:#fff0b8;--t:226 170 30}
+:root[data-theme=clay] [data-w]:nth-child(5n+3).card,:root[data-theme=clay] [data-w]:nth-child(5n+3) .card{--glass-fill:#ffd3e2;--t:217 95 142}
+:root[data-theme=clay] [data-w]:nth-child(5n+4).card,:root[data-theme=clay] [data-w]:nth-child(5n+4) .card{--glass-fill:#cdf3e2;--t:52 162 118}
+:root[data-theme=clay] [data-w]:nth-child(5n+5).card,:root[data-theme=clay] [data-w]:nth-child(5n+5) .card{--glass-fill:#d3e8ff;--t:80 140 225}
+:root[data-theme=clay] .card,:root[data-theme=clay] .login-card,:root[data-theme=clay] .toast{background:var(--glass-fill);box-shadow:var(--clay)}
+:root[data-theme=clay] .card{padding:20px 22px}
+:root[data-theme=clay] .card h2,:root[data-theme=clay] .muted,:root[data-theme=clay] .sub{text-shadow:none}
+:root[data-theme=clay] .card h2{font-weight:600;letter-spacing:.04em}
+:root[data-theme=clay] .titles h1,:root[data-theme=clay] .big-time,:root[data-theme=clay] .wx-temp,:root[data-theme=clay] .chart-val,:root[data-theme=clay] .gh-stat b,:root[data-theme=clay] .ring .rt{font-weight:600;letter-spacing:-.01em}
+:root[data-theme=clay] .big-time{font-size:clamp(2.8rem,8vw,4.6rem);white-space:nowrap}
+/* inner pieces: lighter clay on top of the card, same tint */
+:root[data-theme=clay] .tile,:root[data-theme=clay] .badge,:root[data-theme=clay] .inbox li,:root[data-theme=clay] .values div,:root[data-theme=clay] .wx-days div,:root[data-theme=clay] .gh-stat,:root[data-theme=clay] .btn-outline,:root[data-theme=clay] .btn-secondary{background:#f7f0ff;box-shadow:var(--clay)}
+:root[data-theme=clay] .tile{border-radius:26px}
+:root[data-theme=clay] .inbox li,:root[data-theme=clay] .values div,:root[data-theme=clay] .wx-days div,:root[data-theme=clay] .gh-stat{border-radius:24px}
+:root[data-theme=clay] .badge::before{box-shadow:none}
+:root[data-theme=clay] .dock{background:#f7f0ff;--t:154 124 224;padding:9px;box-shadow:var(--clay)}
+:root[data-theme=clay] .lens{background:#fff;--t:154 124 224;box-shadow:var(--clay)}
+:root[data-theme=clay] .dock button.on{color:hsl(338 70% 52%)}
+:root[data-theme=clay] .tabs{background:var(--groove);padding:5px;box-shadow:var(--clay-in)}
+:root[data-theme=clay] .tab.on{background:#fff;color:hsl(338 70% 52%);box-shadow:var(--clay)}
+:root[data-theme=clay] .btn{font-weight:600}
+:root[data-theme=clay] .btn-default{--t:217 95 142;background:#ffa8c5;color:#5b1a40;box-shadow:var(--clay)}
+:root[data-theme=clay] .btn.rec{--t:200 50 80;background:#ff9aa8;color:#5b0f1d;box-shadow:var(--clay)}
+:root[data-theme=clay] .btn-ghost:hover{background:rgb(154 124 224/.14)}
+:root[data-theme=clay] .tile.on{--t:52 162 118;background:#7fe0b3;color:#1d5c43;box-shadow:var(--clay)}
+:root[data-theme=clay] .btn:active,:root[data-theme=clay] .tile:active{box-shadow:var(--clay-in)}
+:root[data-theme=clay] .input,:root[data-theme=clay] .textarea{background:var(--groove);box-shadow:var(--clay-in)}
+:root[data-theme=clay] .toast{background:#f7f0ff}
+:root[data-theme=clay] .slider{height:16px;background:linear-gradient(to right,var(--fill) var(--pct,0%),var(--groove) var(--pct,0%));box-shadow:var(--clay-in)}
+:root[data-theme=clay] .slider::-webkit-slider-runnable-track{height:16px}
+:root[data-theme=clay] .slider::-webkit-slider-thumb{width:34px;height:34px;margin-top:-9px;background:#fff;box-shadow:inset 3px 4px 6px rgb(255 255 255/.85),inset -4px -6px 10px rgb(154 124 224/.42),0 8px 12px -5px rgb(154 124 224/.66)}
+:root[data-theme=clay] .slider::-moz-range-thumb{width:34px;height:34px;background:#fff;box-shadow:inset 3px 4px 6px rgb(255 255 255/.85),inset -4px -6px 10px rgb(154 124 224/.42),0 8px 12px -5px rgb(154 124 224/.66)}
+:root[data-theme=clay] .progress{height:10px;background:var(--groove);box-shadow:var(--clay-in)}
+:root[data-theme=clay] .progress.thick{height:16px}
+:root[data-theme=clay] .progress i{background:#9a7ce0}
+:root[data-theme=clay] .progress.thick i{background:#5fcf9f}
+:root[data-theme=clay] .np-bar{background:#ff7fa8}
+:root[data-theme=clay] .chart .area{opacity:.25}
+:root[data-theme=clay] .chart .ln{stroke-width:3.5;stroke-linecap:round}
+:root[data-theme=clay] .chart .grid{opacity:.3}
+:root[data-theme=clay] .ring svg{filter:none}
+:root[data-theme=clay] .ring .bar{stroke:#8a63e6;stroke-linecap:round}:root[data-theme=clay] .ring .bar.ok{stroke:#1fa97c}:root[data-theme=clay] .ring .bar.warn{stroke:#e8941a}:root[data-theme=clay] .ring .bar.bad{stroke:#e8547d}
+:root[data-theme=clay] .limit .progress i{background:#5fcf9f}:root[data-theme=clay] .limit .progress i.warn{background:#f2a93b}:root[data-theme=clay] .limit .progress i.bad{background:#ee6a8e}
+:root[data-theme=clay] .logo{--t:217 95 142;background:#ffa8c5;color:#5b1a40;box-shadow:var(--clay)}
+:root[data-theme=clay] code{background:#d9c6f3}
+.sw-clay{background:radial-gradient(circle at 30% 28%,#fff 0 12%,transparent 13%),#ffa8c5;box-shadow:inset -3px -4px 6px rgb(217 95 142/.5),inset 3px 3px 5px rgb(255 255 255/.85)}
+/* widgets in a row share one height (the other themes let some cards hug their content), and sizes follow the card, not the screen */
+:root[data-theme=clay] [data-w]{align-self:stretch}
+:root[data-theme=clay] [data-w=clock]{container-type:inline-size}
+:root[data-theme=clay] .big-time{font-size:clamp(2rem,17cqi,4.6rem)}
+:root[data-theme=clay] .timer-ring .rt{font-size:1.5rem}
+:root[data-theme=clay] .btn{line-height:1.2}
+:root[data-theme=clay] [data-w=stat-up],:root[data-theme=clay] [data-w=stat-load],:root[data-theme=clay] [data-w=power],:root[data-theme=clay] [data-w=batt-health]{display:flex;flex-direction:column;justify-content:center}

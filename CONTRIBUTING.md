@@ -53,10 +53,16 @@ The README images are taken from the demo, never from a real machine. To refresh
 1. `npm run demo`, then open `/_stage` (the options are in the comment at the top of `scripts/demo/stage.html`), for example
    `http://localhost:8799/_stage?w=1280&h=800&p=system&theme=cyber&frame=tablet` for a tablet shot,
    `?trio=home,system,mac&theme=glass` for three phones, or `?themes=glass,light,graphite,dots,cyber,terminal&p=system` for the theme grid.
+
 2. Capture just the device area (move the mouse pointer out of the shot) and save it as `<page>-<theme>.png`.
 3. `scripts/demo/make-media.sh <folder>` turns the captures into `docs/img/*.jpg` and the tour GIF (needs `ffmpeg`).
 
 Keep each image under about 250 KB and the GIF under about 2 MB.
+
+**Every theme must pass the theme test screen.** With `npm run demo` running, open `http://localhost:8799/_themetest?theme=<id>`.
+It shows the real panel with every widget. Drag the corner to resize the panel (or use the Phone, Tablet and Wide presets),
+force every widget to one width (3 to 12 columns), show a single widget on its own, and press *Highlight overflow / clipping*
+to outline anything that sticks out of its card or is cut off. Check phone, tablet and wide, at widths 3, 6 and 12, before opening a pull request.
 
 The **social preview** (`docs/img/social-preview.jpg`, 1280x640, the picture GitHub shows when the repo link is shared) and the website's link-preview
 image (`site/og.jpg`) come from `/_social`: open it with the demo running, capture the 1280x640 card, and scale it with `ffmpeg`
