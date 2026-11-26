@@ -45,6 +45,7 @@ await copy('site/demo-shim.mjs', 'demo/demo-shim.mjs');
 await write('demo/router.mjs', (await read('scripts/demo/router.mjs')).replace("'../../web/widgets.js'", "'./widgets.js'"));
 
 let panel = await read('web/index.html');
+panel = panel.replace('<script src="/compat.js"></script>\n', '');                         // the static demo has no lite page to fall back to
 panel = panel.replace(/(href|src)="\/(?!\/)/g, '$1="./');                                  // /app.js -> ./app.js
 const appTag = '<script type="module" src="./app.js"></script>';
 if (!panel.includes(appTag)) throw new Error('web/index.html no longer loads ./app.js the way the site build expects');

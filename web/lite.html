@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/lite.css">
+<title>Dashling Lite</title>
+</head>
+<body>
+<div id="login" class="box hide">
+  <h1>Dashling</h1>
+  <p class="muted" id="login-hint">Enter the 6-digit code shown in the terminal of the computer running Docker (docker compose logs -f dashling).</p>
+  <input id="code" type="text" maxlength="7" autocomplete="off" placeholder="000 000">
+  <input id="token" type="password" autocomplete="off" placeholder="Access token" class="hide">
+  <button id="login-go" type="button" class="btn">Connect</button>
+  <button id="login-alt" type="button" class="btn btn-quiet">Use access token instead</button>
+  <p id="login-err" class="err"></p>
+</div>
+
+<div id="shell" class="hide">
+  <div class="top"><span id="host" class="host">Dashling</span><span id="status" class="badge">connecting</span></div>
+
+  <div class="box center"><div id="time" class="big">--:--</div><div id="date" class="muted"></div></div>
+
+  <div class="box">
+    <h2>System</h2>
+    <div class="row"><span class="lbl">CPU</span><span id="cpu-t" class="val">--</span></div><div class="bar"><i id="cpu-b"></i></div>
+    <div class="row"><span class="lbl">Memory</span><span id="mem-t" class="val">--</span></div><div class="bar"><i id="mem-b"></i></div>
+    <div class="row"><span class="lbl">Disk</span><span id="disk-t" class="val">--</span></div><div class="bar"><i id="disk-b"></i></div>
+    <div class="row"><span class="lbl">Battery</span><span id="batt-t" class="val">--</span></div><div class="bar"><i id="batt-b"></i></div>
+    <div class="row"><span class="lbl">Uptime</span><span id="up-t" class="val">--</span></div>
+  </div>
+
+  <div class="box center">
+    <h2>Now playing</h2>
+    <div id="np-title" class="title">Nothing playing</div>
+    <div id="np-artist" class="muted"></div>
+    <div class="bar"><i id="np-b"></i></div>
+    <div class="btns">
+      <button type="button" class="btn" data-act="prev">&laquo; Prev</button>
+      <button type="button" class="btn" data-act="playpause" id="np-toggle">Play</button>
+      <button type="button" class="btn" data-act="next">Next &raquo;</button>
+    </div>
+    <div class="btns">
+      <button type="button" class="btn" id="vol-dn">Vol &minus;</button>
+      <button type="button" class="btn" data-act="mute">Mute</button>
+      <button type="button" class="btn" id="vol-up">Vol +</button>
+    </div>
+    <div id="vol-t" class="muted"></div>
+  </div>
+
+  <div class="box center">
+    <h2>Weather</h2>
+    <div id="wx" class="muted">Loading&hellip;</div>
+  </div>
+
+  <div class="box center">
+    <button type="button" class="btn" id="btn-lock">Lock computer</button>
+    <p id="msg" class="muted"></p>
+  </div>
+
+  <p class="foot muted">Lite view for older browsers. <a href="/?full=1">Try the full app</a></p>
+</div>
+<script src="/lite.js"></script>
+</body>
+</html>
